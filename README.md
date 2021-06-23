@@ -8,4 +8,4 @@
 # Sections
 1. EDA 및 결과 시각화
 2. 기본 예측 모델로 regression 사용
-3. 시간이 남으면 ML, DL, time series 모델도 추가로 적용하여 가격을 예측해봄   
+3. 제출기간까지 남는 시간이 있으면 ML, DL, time series 모델도 추가로 적용하여 가격을 예측해봄   
