@@ -9,7 +9,8 @@ Link: https://www.data.go.kr/data/3050988/fileData.do
 
 # Sections
 🇰🇷 
-1. Preprocessing; 분석이 가능하도록 연도별 데이터 파일 정리; NaN 처리, shape 통일 등
-2. EDA 및 결과 시각화
-3. 기본 예측 모델로 regression 사용
-4. 제출기간까지 남는 시간이 있으면 ML, DL, time series 모델도 추가로 적용하여 가격을 예측해봄
+1. 프로젝트 개요
+2. Preprocessing; 분석이 가능하도록 연도별 데이터 파일 정리; NaN 처리, shape 통일 등
+3. EDA 및 결과 시각화
+4. 기본 예측 모델로 regression 사용
+5. 제출기간까지 남는 시간이 있으면 ML, DL, time series 모델도 추가로 적용하여 가격을 예측해봄
