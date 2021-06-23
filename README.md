@@ -9,7 +9,7 @@
 
 # Sections
 🇰🇷 
-## 1. 프로젝트 개요
+1. ## 프로젝트 개요
 ## 2. Preprocessing; 분석이 가능하도록 연도별 데이터 파일 정리; NaN 처리, shape 통일 등
 ## 3. EDA 및 결과 시각화
 ## 4. 기본 예측 모델로 regression 사용
