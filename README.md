@@ -10,7 +10,7 @@
 # Sections
 1. ## Project Overview
 2. ## Preprocessing
-  - Data is aggregated on a yearly basis and needs cleanup: null values, different shapes, etc.
+  - Data is aggregated on a yearly basis and needs preprocessing of null values, different shapes, etc.
 3. ## EDA & Visualization
 4. ## Regression As Predictive Model
 5. ## Extra 
