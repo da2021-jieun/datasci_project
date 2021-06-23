@@ -8,7 +8,6 @@
 - (Link: https://www.data.go.kr/data/3050988/fileData.do)
 
 # Sections
-🇰🇷 
 1. ## 프로젝트 개요
 2. ## Preprocessing
   - 분석이 가능하도록 연도별 데이터 파일 정리; NaN 처리, shape 통일 등
