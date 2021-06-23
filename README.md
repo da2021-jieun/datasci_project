@@ -4,7 +4,7 @@
 
 # Dataset
 - Seoul Officetel rentals data from 2011-2021 (Open Data Portal, www.data.go.kr/en)
-- 🇰🇷 2011-2021 서울 오피스텔 전월세 데이터 (공공데이터포털, www.data.go.kr)
+- 🇰🇷 2011-2021 서울 오피스텔 전월세 거래 데이터 (공공데이터포털, www.data.go.kr)
 - (Link: https://www.data.go.kr/data/3050988/fileData.do)
 
 # Sections
