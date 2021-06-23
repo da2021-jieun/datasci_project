@@ -1,5 +1,5 @@
 # What the project is about
-- 🇰🇷 2011년부터 2020년까지 10년 기간의 서울 오피스텔 전월세 거래 데이터를 분석 및 시각화하고 이를 토대로 2021년 1월부터 6월까지의 월세/보증금을 예측함
+- 🇰🇷 https://apps.timwhitlock.info/unicode/inspect/hex/1F1F0/1F1F7 2011년부터 2020년까지 10년 기간의 서울 오피스텔 전월세 거래 데이터를 분석 및 시각화하고 이를 토대로 2021년 1월부터 6월까지의 월세/보증금을 예측함
 - 🇺🇸 EDA, regression modeling, and more using real estate rentals data—Seoul officetel rentals from 2011 to 2021 
 
 # Dataset
