@@ -193,3 +193,23 @@ df.rent_type.value_counts()
 df[df.rent_type=="전세"]["yr_built"].value_counts()
 
 # df.info()
+
+# ======================================================
+### Change dtype of `deposit` to int
+#### - First, remove the thousand-separator
+#### - and convert to int
+df.deposit.astype(str).str.contains(",").sum()
+# df["deposit"]= df_backup["보증금(만원)"]
+df["deposit"]= df[df.deposit.astype(str).str.contains(",")].deposit.str.replace(",","").astype(int)
+
+# ======================================================
+### Impute the monthly rent_price for the lump-sum lease
+
+#### - Zero-value cells will be filled with deposit.mode value of the monthly rent_type
+#### 🇰🇷 >  2021년 5월 서울 오피스텔 전월세 전환율은 4.69%이며 전월세 전환식은 아래와 같다.
+#### ((lump_sum - new_deposit) * 4.69%) / 12 = monthly_rent
+#### 오피스텔 가격동향조사 link: https://www.r-one.co.kr/
+deposit_median= df[df.rent_type=="월세"].deposit.median()[0]
+df["rent_price_adj"]= ((df.deposit - deposit_median)*.0469)/12
+### 월세 계약 건은 원래의 값으로 대체한다
+df.loc[df.rent_price_adj==0,"rent_price_adj"]= df.loc[df.rent_type=="월세","rent_price"]
