@@ -209,7 +209,37 @@ df["deposit"]= df[df.deposit.astype(str).str.contains(",")].deposit.str.replace(
 #### 🇰🇷 >  2021년 5월 서울 오피스텔 전월세 전환율은 4.69%이며 전월세 전환식은 아래와 같다.
 #### ((lump_sum - new_deposit) * 4.69%) / 12 = monthly_rent
 #### 오피스텔 가격동향조사 link: https://www.r-one.co.kr/
-deposit_median= df[df.rent_type=="월세"].deposit.median()[0]
+deposit_median= df[df.rent_type=="월세"].deposit.median()#[0]
 df["rent_price_adj"]= ((df.deposit - deposit_median)*.0469)/12
-### 월세 계약 건은 원래의 값으로 대체한다
+### replace zero cells with the original rent_price for monthly rent type 월세 계약 건은 원래의 값으로 대체한다
 df.loc[df.rent_price_adj==0,"rent_price_adj"]= df.loc[df.rent_type=="월세","rent_price"]
+
+### Find the GPS coordinates for the 25 districts
+### - ['강남구', '강동구', '강북구', '강서구', '관악구', '광진구', '구로구', '금천구', '노원구',       '도봉구', '동대문구', '동작구', '마포구', '서대문구', '서초구', '성동구', '성북구', '송파구',       '양천구', '영등포구', '용산구', '은평구', '종로구', '중구', '중랑구']
+coords= [
+    (37.5172, 127.0473), #gangnam
+    (37.5301, 127.1238), #gangdong
+    (37.6396, 127.0257), #gangbuk-gu
+    (37.5510, 126.8495),# gangseo-gu
+    (37.4784, 126.9516),# gwanak-gu
+    (37.5385, 127.0823), #gwangjin-gu 
+    (37.4954, 126.8874), #guro-gu
+    (37.4519, 126.9020), #geumcheon-gu
+    (37.6542, 127.0568), #nowon-gu
+    (37.6688, 127.0471), #dobong-gu
+(37.5744, 127.0400), #dongdaemun-gu
+(37.5124, 126.9393), #dongjak-gu
+(37.5638, 126.9084), #mapo-gu
+(37.5791, 126.9368), #seodaemun-gu
+(37.4837, 127.0324), #seocho-gu
+(37.5633, 127.0371), #seongdong-gu
+(37.5891, 127.0182), #seongbuk-gu
+(37.5145, 127.1066), #songpa-gu
+(37.5169, 126.8664), #yangcheon-gu
+(37.5264, 126.8962), #yeongdeungpo-gu
+    (37.5384, 126.9654), #yongsan-gu
+    (37.6027, 126.9291), #eunpyeong-gu
+    (37.5730, 126.9794), #jongno-gu
+    (37.5641, 126.9979), #jung-gu
+    (37.6066, 127.0927), #jungnang-gu
+]
