@@ -81,7 +81,7 @@ for i,df in enumerate(df_list):
 
 # df_2014.isna().sum()
 
-
+df_list= [df_2020,df_2019,df_2018,df_2017,df_2016,df_2015,df_2014_clean,df_2013,df_2012,df_2011]
 df_backup= pd.concat(df_list,ignore_index=True)
 df= df_backup.copy()
 df.info()
@@ -120,8 +120,8 @@ df.columns= cols
 # df.head(1)
 # df.isna().sum()
 
-import numpy as np 
-nan_index= np.where(df.str_addr.isna())
+# import numpy as np 
+# nan_index= np.where(df.str_addr.isna())
 # nan_index
 # nan_index[0]
 
@@ -132,6 +132,7 @@ nan_index= np.where(df.str_addr.isna())
 import numpy as np
 df["estate_name"]= df["estate_name"].astype(str)
 df["str_addr"]= df.str_addr.astype(str)
+
 str_addr_series= [row["str_addr"].replace("nan","")+row["estate_name"] if row["str_addr"]=="nan" else row["str_addr"]+", "+row["estate_name"] for i,row in df.iterrows()]
 df.insert(0,"street_addr",str_addr_series)
 #### 🇰🇷
@@ -157,12 +158,16 @@ for i,row in estate_street_name.iterrows():
 # =======================================================
 # 도로 주소가 없는 셀에 단지명을 채워넣음.
 # 32418 rows 
+from timeit import default_timer as timer
+start_t= timer()
 for i in idx_empty_addr:
     estate_name= df.loc[i,"estate_name"]
     str_addr= ESTATE_STR_ADDR.get(estate_name)
     df.loc[i,"str_addr"]= str_addr if str_addr is not None else estate_name
+elapsed_t= timer()-start_t
+print(elapsed_t,"seconds")
 
-#### equivalent function
+#### function equivalent to the above
 def replace_none(estate_name,str_addr):
     if str_addr is None:
         return estate_name
@@ -181,7 +186,7 @@ df.loc[idx_empty_addr,"str_addr"]=df.iloc[idx_empty_addr][["estate_name","str_ad
 #### - estate_name
 #### - str_addr
 
-df.drop(["lot_num","lot_num_secondary","estate_name"],axis=1,inplace=True)
+df.drop(["lot_num","lotnum_2","estate_name"],axis=1,inplace=True)
 # df.head(1)
 
 # =======================================================
@@ -189,9 +194,9 @@ df.drop(["lot_num","lot_num_secondary","estate_name"],axis=1,inplace=True)
 #### - 전체 데이터가 서울 지역에 한정되어 있으므로 "서울특별시", 동 이름 제거
 
 df.insert(0,"district",[val.split()[1] for i,val in df.district1.iteritems() ])
-# df.head(2)
+df.head(1)
 
-df.insert(4,"old_div",[f"{val.split()[2]}" for i,val in df_backup.시군구.iteritems()])
+df.insert(1,"old_div",[f"{val.split()[2]}" for i,val in df.district1.iteritems()])
 df.head(1)
 
 # =======================================================
@@ -213,7 +218,7 @@ def find_median(col,df):
 df.loc[df.yr_built.isna(),"yr_built"]= find_median("yr_built", df) # median: 2013
 df["yr_built"]= df.yr_built.astype(int)
 
-# df.head(1)
+df.head(1)
 # df.isna().sum()
 # df.yr_built.nunique()
 # df.yr_built.unique()
@@ -230,8 +235,8 @@ df["yr_built"]= df.yr_built.astype(int)
 (df.sign_dd.value_counts()/df.shape[0])
 
 sign_date= pd.to_datetime((df.sign_yymm.astype(str)+df.sign_dd.astype(str)),format="%Y%m%d")
-df.insert(4,"sign_date",sign_date)
-# df.head(1)
+df.insert(7,"sign_date",sign_date)
+df.head(1)
 
 # =======================================================
 ### rent_type ratio
@@ -251,7 +256,7 @@ df.deposit.astype(str).str.contains(",").sum()
 # df["deposit"]= df_backup["보증금(만원)"]
 df["deposit"]= df.astype(str).deposit.str.replace(",","").astype(int)
 
-df= df.convert_dtypes()
+# df= df.convert_dtypes()
 df.dtypes
 
 # =====================================================
@@ -312,7 +317,7 @@ df.insert(1,"latitude",lat)
 df.insert(2,"longitude",lon)
 df.head(1)
 # =====================================================
-df.insert(4,"street_addr",df.str_addr)
+df.insert(3,"street_addr",df.str_addr)
 del df["str_addr"]
 df.head(1)
 
@@ -336,7 +341,7 @@ def find_pattern(pat,str_seq):
 import re
 ser_street= [re.split("\d+|\(",val)[0] for val in df.street_addr.values]
 #### longest street name
-max(ser_street,key=len) # 목동중앙북로
+# max(ser_street,key=len) # 목동중앙북로
 
 ### Add new `street` column
 df.insert(3,"street",ser_street)
@@ -348,5 +353,57 @@ df[df.street.str.contains("진관")].street_addr.unique() #진관_로
 df[df.street.str.contains("마곡중앙")].street_addr.unique() # 마곡중앙로
 df[df.street.str.contains("승방")].street_addr.unique() # 승방길
 
-# df.iloc[no_name_idx]["street"]= 
+### ==========================================
+### Numeric encoding
+#### - `district`: 4 groups
+#### - `old_div`: 272 categories -> 10 groups
+#### - `floor`: <=10, >10, >20 -> 3 groups
+#### - `yr_built`: 70s,80s,90s,00s,10s -> 5 groups 
+#### 🇰🇷
+#### > categorical 유형의 컬럼은 숫자형으로 encode함
+
+df["district"]= df.district.astype("category")
+df["old_div"]= df.district.astype("category")
+df["floor"]= df.district.astype("category")
+df["yr_built"]= df.district.astype("category")
+df.dtypes
+
+import category_encoders as ce
+from timeit import default_timer as timer
+
+### ==========================================
+### encode `district`
+start_t= timer()
+
+# ce_hash.hashing_trick(df[["old_div"]], N=10, cols=['old_div'])
+encoder= ce.hashing.HashingEncoder(cols=["district"],return_df=True)
+df_enc= encoder.hashing_trick(df[["district","lat","lon"]],N=4)
+# df_enc.insert(0,"district",df.district)
+
+print("elapsed:",timer()-start_t,"seconds")
+df_enc.head(1)
+
+### ==========================================
+### encode `old_div`
+
+### ==========================================
+### encode `floor`
+
+### ==========================================
+### encode `yr_built`
+
+### ==========================================
+### Divide the dataset by `rent_type`
+#### - Lump-sum: `deposit` is chosen as the target variable.
+#### - Monthly: `rent_price` as the target variable.   
+#### 🇰🇷
+#### > 임대 유형에 따라 target_variable이 달라지므로 데이터세트를 분리함
+
+df_lumpsum= df[df.rent_type=="전세"].drop("rent_type",axis=1)
+df_monthly= df[df.rent_type=="월세"].drop("rent_type",axis=1)
+# 전세 데이터세트 중 월세가 0보다 큰 3건은 고려 안 함
+# drop rent_price column from df_lumpsum
+df_lumpsum.drop("rent_price",axis=1) 
+df_lumpsum.shape, df_monthly.shape
+
 df.head(1)
