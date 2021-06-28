@@ -56,21 +56,35 @@ df_2011= pd.read_csv(path+csv_2011,encoding="utf-8")
 # for i,df in enumerate(df_list):
 #     year=2020-i
 #     print(year,":",df.shape)
-    
-# =======================================================
-#### - The two unnamed columns are from the year 2014.
-#### - tabulation of 1909 rows incorrect; has to be manually adjusted
-
-# df_2014.isna().sum()
 
 df_2014_clean= pd.read_csv(path+csv_2014_clean,encoding="utf-8")
 df_2014_clean.shape
 
 df_list= [df_2020,df_2019,df_2018,df_2017,df_2016,df_2015,df_2014_clean,df_2013,df_2012,df_2011]
+for i,df in enumerate(df_list):
+    year=2020-i
+    print(year,":",df.info())
+    
+# =======================================================
+#### - The two unnamed columns are from the year 2014.
+#### - tabulation of 1909 rows incorrect; has to be manually adjusted
+#### - 2014년 단지명에 도로명도 포함된 부분 직접 수정
+#### - 2015: 2931 rows 
+#### - 2016: 3054 rows
+#### - 2017: 7163 rows
+#### - 2018: 6276 rows
+#### - 2019: 6811
+#### - 2020: 6183 rows
+# pd.set_option("display.max_rows",106) # 106 rows with whitespace
+# na_idx= df_2014_clean[df_2014_clean["도로명"]==" "].index
+# df_2014_clean.iloc[na_idx]
+
+# df_2014.isna().sum()
+
+
 df_backup= pd.concat(df_list,ignore_index=True)
 df= df_backup.copy()
-# df.info()
-
+df.info()
 # df.head(1)
 
 # =======================================================
@@ -82,13 +96,13 @@ df= df_backup.copy()
 #### - 도로명 (street address)
 #### The street address is the only address that is legally valid in South Korea since the Road Name Address Act came fully into effect on January 1, 2014. The estate name has additional information and will be merged with the street name. The empty cells of the street address column will be filled the lot number and/or the estate name. The lot number is made up of a primary number hyphenated with a secondary number, e.g., 1237-3.
 #### 🇰🇷
-#### > 도로명주소법이 전면적으로 시행되면서 2014년 1월 1일부터는 토지대장을 제외한 모든 곳에 도로명주소만을 쓸 수 있다. 따라서 도로명 주소와 단지명을 합쳐 각 건물의 전체 주소를 표시하되 도로명 주소 또는 단지명 컬럼이 비어 있으면 번지를 사용한다.
+#### > 도로명주소법이 전면적으로 시행되면서 2014년 1월 1일부터는 토지대장을 제외한 모든 곳에 도로명주소만을 쓸 수 있다. 따라서 번지는 제외하고 도로명 주소와 단지명을 활용한다.
 
 ### Rename data columns
 #### - 시군구 → district1
 #### - 번지 → lot_num
-#### - 본번 → lot_num_primary
-#### - 부번 → lot_num_secondary
+#### - 본번 → lot_num_1
+#### - 부번 → lot_num_2
 #### - 단지명 → estate_name
 #### - 전월세구분 → rent_type (lump-sum or monthly)
 #### - 전용면적(㎡) → unit_size (m²)
@@ -100,7 +114,7 @@ df= df_backup.copy()
 #### - 건축년도 → yr_built
 #### - 도로명 → str_addr
 
-cols= ["district1","lot_num","lot_num_primary","lot_num_secondary","estate_name","rent_type","unit_size","sign_yymm","sign_dd","deposit","rent_price","floor","yr_built","str_addr"]
+cols= ["district1","lot_num","lotnum_1","lotnum_2","estate_name","rent_type","unit_size","sign_yymm","sign_dd","deposit","rent_price","floor","yr_built","str_addr"]
 
 df.columns= cols
 # df.head(1)
@@ -115,24 +129,59 @@ nan_index= np.where(df.str_addr.isna())
 ### Merge str_addr and estate_name
 #### - into new column street_addr, and
 #### - drop the two columns
-
 import numpy as np
 df["estate_name"]= df["estate_name"].astype(str)
 df["str_addr"]= df.str_addr.astype(str)
 str_addr_series= [row["str_addr"].replace("nan","")+row["estate_name"] if row["str_addr"]=="nan" else row["str_addr"]+", "+row["estate_name"] for i,row in df.iterrows()]
 df.insert(0,"street_addr",str_addr_series)
+#### 🇰🇷
+#### > 탐색 결과 도로명 컬럼에 whitespace만 있는 row가 파일마다 수천개 발견됨. 빈 cell은 단지명으로 채움
+### Fill in empty or whitespaced cells with estate_name
+idx_empty_addr= df[df.str_addr==" "].index
+idx_empty_addr.shape
+
+# 도로명이 비어있는 레코드 중 다른 연도 파일에 도로명이 기록되어 있으면 복사하여 채운다
+df["estate_name"]= df.estate_name.str.strip().astype(str)
+df["str_addr"]= df.str_addr.str.strip().astype(str)
+
+empty_strt_estate= list(df.iloc[idx_empty_addr].estate_name.unique()) # 261 properties
+estate_street_name= df[df.str_addr!=""][["estate_name","str_addr"]].drop_duplicates()
+ESTATE_STR_ADDR= {} # KEY estate_name: VALUE street_addr
+for i,row in estate_street_name.iterrows():
+    # list of estate without street addr
+    for es in empty_strt_estate:
+        if es in row["estate_name"]:
+            ESTATE_STR_ADDR[es]= row.str_addr
+            continue
+
+# =======================================================
+# 도로 주소가 없는 셀에 단지명을 채워넣음.
+# 32418 rows 
+for i in idx_empty_addr:
+    estate_name= df.loc[i,"estate_name"]
+    str_addr= ESTATE_STR_ADDR.get(estate_name)
+    df.loc[i,"str_addr"]= str_addr if str_addr is not None else estate_name
+
+#### equivalent function
+def replace_none(estate_name,str_addr):
+    if str_addr is None:
+        return estate_name
+    else:
+        return str_addr
+df.loc[idx_empty_addr,"str_addr"]=df.iloc[idx_empty_addr][["estate_name","str_addr"]].apply(lambda x: replace_none(*x),axis=1)#.drop_duplicates()
+
+# =======================================================
 
 # df.isna().sum()
 
 # =======================================================
 ### Drop unused columns
 #### - lot_num
-#### - lot_num_primary
-#### - lot_num_secondary
+#### - lot_num_2
 #### - estate_name
 #### - str_addr
 
-df.drop(["lot_num","lot_num_primary","lot_num_secondary","estate_name","str_addr"],axis=1,inplace=True)
+df.drop(["lot_num","lot_num_secondary","estate_name"],axis=1,inplace=True)
 # df.head(1)
 
 # =======================================================
@@ -142,15 +191,15 @@ df.drop(["lot_num","lot_num_primary","lot_num_secondary","estate_name","str_addr
 df.insert(0,"district",[val.split()[1] for i,val in df.district1.iteritems() ])
 # df.head(2)
 
-df.insert(2,"district_sub",[f"{val.split()[2]}" for i,val in df.district1.iteritems()])
-# df.head(1)
+df.insert(4,"old_div",[f"{val.split()[2]}" for i,val in df_backup.시군구.iteritems()])
+df.head(1)
 
 # =======================================================
 ### Drop columns
 #### - district1
 
 df.drop("district1",axis=1,inplace=True)
-df.head(1)
+# df.head(1)
 
 # =======================================================
 ### Data imputation: yr_built
@@ -164,10 +213,10 @@ def find_median(col,df):
 df.loc[df.yr_built.isna(),"yr_built"]= find_median("yr_built", df) # median: 2013
 df["yr_built"]= df.yr_built.astype(int)
 
-df.head(1)
-df.isna().sum()
-df.yr_built.nunique()
-df.yr_built.unique()
+# df.head(1)
+# df.isna().sum()
+# df.yr_built.nunique()
+# df.yr_built.unique()
 
 # =======================================================
 ### Create new column sign_date
@@ -175,14 +224,14 @@ df.yr_built.unique()
 #### 🇰🇷
 #### > 계약년월(예: 202004)과 계약일(11)을 합쳐 sign_date (예: 2020-04-11) 생성
 
-df.sign_dd.value_counts()
+# df.sign_dd.value_counts()
 
 #### sign_dd ratio 
 (df.sign_dd.value_counts()/df.shape[0])
 
 sign_date= pd.to_datetime((df.sign_yymm.astype(str)+df.sign_dd.astype(str)),format="%Y%m%d")
-df.insert(5,"sign_date",sign_date)
-df.head(1)
+df.insert(4,"sign_date",sign_date)
+# df.head(1)
 
 # =======================================================
 ### rent_type ratio
@@ -263,7 +312,41 @@ df.insert(1,"latitude",lat)
 df.insert(2,"longitude",lon)
 df.head(1)
 # =====================================================
-
+df.insert(4,"street_addr",df.str_addr)
+del df["str_addr"]
+df.head(1)
 
 # =====================================================
 ### separate street names using regular expression
+#
+# https://stackoverflow.com/questions/43237338/python-regular-expression-split-string-into-numbers-and-text-symbols
+import re
+re.sub("\(|\)","","(1237-3)") # gives 1237-3
+
+import re
+def find_pattern(pat,str_seq):
+    # \d+     matches one or more digits
+    # \d*\D+  matches zero or more digits followed by one or more non-digits
+    # \d+|\D+ matches one or more digits OR one or more non-digits
+    return re.search(pat,str_seq).group()
+
+#### split by whitespace \s or
+####  one or more digits \d+ 
+#마곡중앙로 161-11, 힐스테이트에코 마곡나루역 라마다앙코르 서울마곡
+import re
+ser_street= [re.split("\d+|\(",val)[0] for val in df.street_addr.values]
+#### longest street name
+max(ser_street,key=len) # 목동중앙북로
+
+### Add new `street` column
+df.insert(3,"street",ser_street)
+df.head(1)
+
+#
+df[df.street.str.contains("청룡")].street_addr.unique() #청룡_길
+df[df.street.str.contains("진관")].street_addr.unique() #진관_로
+df[df.street.str.contains("마곡중앙")].street_addr.unique() # 마곡중앙로
+df[df.street.str.contains("승방")].street_addr.unique() # 승방길
+
+# df.iloc[no_name_idx]["street"]= 
+df.head(1)
