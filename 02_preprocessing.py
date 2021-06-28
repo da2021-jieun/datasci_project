@@ -356,7 +356,7 @@ df[df.street.str.contains("승방")].street_addr.unique() # 승방길
 ### ==========================================
 ### Numeric encoding
 #### - `district`: 4 groups
-#### - `old_div`: 272 categories -> 10 groups
+#### - `old_div`: 272 categories -> 4*4 groups
 #### - `floor`: <=10, >10, >20 -> 3 groups
 #### - `yr_built`: 70s,80s,90s,00s,10s -> 5 groups 
 #### 🇰🇷
