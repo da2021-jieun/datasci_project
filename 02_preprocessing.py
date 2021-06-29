@@ -133,8 +133,8 @@ import numpy as np
 df["estate_name"]= df["estate_name"].astype(str)
 df["str_addr"]= df.str_addr.astype(str)
 
-str_addr_series= [row["str_addr"].replace("nan","")+row["estate_name"] if row["str_addr"]=="nan" else row["str_addr"]+", "+row["estate_name"] for i,row in df.iterrows()]
-df.insert(0,"street_addr",str_addr_series)
+# str_addr_series= [row["str_addr"].replace("nan","")+row["estate_name"] if row["str_addr"]=="nan" else row["str_addr"]+", "+row["estate_name"] for i,row in df.iterrows()]
+# df.insert(0,"street_addr",str_addr_series)
 #### 🇰🇷
 #### > 탐색 결과 도로명 컬럼에 whitespace만 있는 row가 파일마다 수천개 발견됨. 빈 cell은 단지명으로 채움
 ### Fill in empty or whitespaced cells with estate_name
@@ -257,7 +257,7 @@ df.deposit.astype(str).str.contains(",").sum()
 df["deposit"]= df.astype(str).deposit.str.replace(",","").astype(int)
 
 # df= df.convert_dtypes()
-df.dtypes
+# df.dtypes
 
 # =====================================================
 ### Impute the monthly rent_price for the lump-sum lease
@@ -377,7 +377,7 @@ start_t= timer()
 
 # ce_hash.hashing_trick(df[["old_div"]], N=10, cols=['old_div'])
 encoder= ce.hashing.HashingEncoder(cols=["district"],return_df=True)
-df_enc= encoder.hashing_trick(df[["district","lat","lon"]],N=4)
+df_enc= encoder.hashing_trick(df[["district","latitude","longitude"]],N=4)
 # df_enc.insert(0,"district",df.district)
 
 print("elapsed:",timer()-start_t,"seconds")
@@ -385,12 +385,27 @@ df_enc.head(1)
 
 ### ==========================================
 ### encode `old_div`
+start_t= timer()
+encoder= ce.hashing.HashingEncoder(cols=["old_div"],return_df=True)
+df_enc= encoder.hashing_trick(df[["old_div","latitude","longitude"]],N=16)
+print("elapsed:",timer()-start_t,"seconds")
+df_enc.head(1)
 
 ### ==========================================
 ### encode `floor`
+start_t= timer()
+encoder= ce.hashing.HashingEncoder(cols=["floor"],return_df=True)
+df_enc= encoder.hashing_trick(df[["floor","yr_built"]],N=3)
+print("elapsed:",timer()-start_t,"seconds")
+df_enc.head(1)
 
 ### ==========================================
 ### encode `yr_built`
+start_t= timer()
+encoder= ce.hashing.HashingEncoder(cols=["yr_built"],return_df=True)
+df_enc= encoder.hashing_trick(df[["yr_built","latitude","longitude"]],N=5)
+print("elapsed:",timer()-start_t,"seconds")
+df_enc.head(1)
 
 ### ==========================================
 ### Divide the dataset by `rent_type`
