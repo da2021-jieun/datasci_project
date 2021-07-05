@@ -23,20 +23,20 @@ mpl.rc("font",family=font_name)
 import pandas as pd 
 
 path= "./data/"
-#csv_2021= "seoul_rental_2021.csv"
+# csv_2021= "seoul_rental_2021.txt"
 csv_2020= "seoul_rental_2020.csv"
 csv_2019= "seoul_rental_2019.csv"
 csv_2018= "seoul_rental_2018.csv"
 csv_2017= "seoul_rental_2017.csv"
 csv_2016= "seoul_rental_2016.txt"
 csv_2015= "seoul_rental_2015.txt"
-#csv_2014= "seoul_rental_2014.txt"
+csv_2014= "seoul_rental_2014.txt"
 csv_2014_clean= "seoul_rental_2014_clean.txt"
 csv_2013= "seoul_rental_2013.txt"
 csv_2012= "seoul_rental_2012.txt"
 csv_2011= "seoul_rental_2011.txt"
 
-# df_2021= pd.read_csv(path+csv_2021,encoding="cp949")
+# df_2021= pd.read_csv(path+csv_2021,encoding="utf-8")
 # df_2021.shape
 df_2020= pd.read_csv(path+csv_2020,encoding="cp949")
 df_2019= pd.read_csv(path+csv_2019,encoding="cp949")
@@ -44,7 +44,7 @@ df_2018= pd.read_csv(path+csv_2018,encoding="cp949")
 df_2017= pd.read_csv(path+csv_2017,encoding="cp949")
 df_2016= pd.read_csv(path+csv_2016,encoding="utf-8")
 df_2015= pd.read_csv(path+csv_2015,encoding="utf-8")
-#df_2014= pd.read_csv(path+csv_2014,encoding="utf-8")
+df_2014= pd.read_csv(path+csv_2014,encoding="utf-8")
 df_2013= pd.read_csv(path+csv_2013,encoding="utf-8")
 df_2012= pd.read_csv(path+csv_2012,encoding="utf-8")
 df_2011= pd.read_csv(path+csv_2011,encoding="utf-8")
@@ -52,18 +52,19 @@ df_2011= pd.read_csv(path+csv_2011,encoding="utf-8")
 ### Merge 10-year records into one dataframe
 #### - Check the shape of all the dataframes
 
-# df_list= [df_2020,df_2019,df_2018,df_2017,df_2016,df_2015,df_2014,df_2013,df_2012,df_2011]
-# for i,df in enumerate(df_list):
-#     year=2020-i
-#     print(year,":",df.shape)
+df_list= [df_2020,df_2019,df_2018,df_2017,df_2016,df_2015,df_2014,df_2013,df_2012,df_2011]
+for i,df in enumerate(df_list):
+    year=2020-i
+    print(year,":",df.shape)
+print("="*35)
 
 df_2014_clean= pd.read_csv(path+csv_2014_clean,encoding="utf-8")
-df_2014_clean.shape
+# df_2014_clean.shape
 
 df_list= [df_2020,df_2019,df_2018,df_2017,df_2016,df_2015,df_2014_clean,df_2013,df_2012,df_2011]
 for i,df in enumerate(df_list):
     year=2020-i
-    print(year,":",df.info())
+    print(year,":",df.shape)
     
 # =======================================================
 #### - The two unnamed columns are from the year 2014.
@@ -130,8 +131,11 @@ df.columns= cols
 #### - into new column street_addr, and
 #### - drop the two columns
 import numpy as np
-df["estate_name"]= df["estate_name"].astype(str)
-df["str_addr"]= df.str_addr.astype(str)
+df["estate_name"]= df["estate_name"].astype(str).str.strip()
+df["str_addr"]= df.str_addr.astype(str).str.strip()
+# 도로명이 비어있는 레코드 중 다른 연도 파일에 도로명이 기록되어 있으면 복사하여 채운다
+# df["estate_name"]= df.estate_name.str.strip().astype(str)
+# df["str_addr"]= df.str_addr.str.strip().astype(str)
 
 # str_addr_series= [row["str_addr"].replace("nan","")+row["estate_name"] if row["str_addr"]=="nan" else row["str_addr"]+", "+row["estate_name"] for i,row in df.iterrows()]
 # df.insert(0,"street_addr",str_addr_series)
@@ -140,10 +144,6 @@ df["str_addr"]= df.str_addr.astype(str)
 ### Fill in empty or whitespaced cells with estate_name
 idx_empty_addr= df[df.str_addr==" "].index
 idx_empty_addr.shape
-
-# 도로명이 비어있는 레코드 중 다른 연도 파일에 도로명이 기록되어 있으면 복사하여 채운다
-df["estate_name"]= df.estate_name.str.strip().astype(str)
-df["str_addr"]= df.str_addr.str.strip().astype(str)
 
 empty_strt_estate= list(df.iloc[idx_empty_addr].estate_name.unique()) # 261 properties
 estate_street_name= df[df.str_addr!=""][["estate_name","str_addr"]].drop_duplicates()
@@ -256,8 +256,221 @@ df.deposit.astype(str).str.contains(",").sum()
 # df["deposit"]= df_backup["보증금(만원)"]
 df["deposit"]= df.astype(str).deposit.str.replace(",","").astype(int)
 
+### =====================================================
+### Change dtype of `lotnum_1`,`sign_yymm`,`sign_dd`,`rent_price`,`floor` to int32
+import numpy as np
+df.lotnum_1= df.lotnum_1.astype(int)
+df.sign_yymm= df.sign_yymm.astype(int)
+df.sign_dd= df.sign_dd.astype(int)
+df.unit_size= df.unit_size.astype(np.float32)
+df.rent_price= df.rent_price.astype(int)
+df.floor= df.floor.astype(int)
+
 # df= df.convert_dtypes()
 # df.dtypes
+
+### ===============================================
+### ============== basic statistics ==============
+### ===============================================
+### dataset shape: (284785 rows, 13 columns)
+## 0   district    284785 non-null  object        
+#  1   old_div     284785 non-null  object        
+#  2   lotnum_1    284785 non-null  int32         
+#  3   rent_type   284785 non-null  object        
+#  4   unit_size   284785 non-null  float32       
+#  5   sign_yymm   284785 non-null  int32         
+#  6   sign_dd     284785 non-null  int32         
+#  7   sign_date   284785 non-null  datetime64[ns]
+#  8   deposit     284785 non-null  int32         
+#  9   rent_price  284785 non-null  int32         
+#  10  floor       284785 non-null  int32         
+#  11  yr_built    284785 non-null  int32         
+#  12  str_addr    284785 non-null  object 
+print(df.shape)
+
+# =============================================
+### Number of missing values
+# district      0
+# old_div       0
+# lotnum_1      0
+# rent_type     0
+# unit_size     0
+# sign_yymm     0
+# sign_dd       0
+# sign_date     0
+# deposit       0
+# rent_price    0
+# floor         0
+# yr_built      0
+# str_addr      0
+print(df.isna().sum())
+
+# =============================================
+### column `district`
+print("The district names:\n",df.district.unique())
+print("="*50)
+print("The number of the districts:",df.district.nunique())
+print("="*50)
+print(f"The occurrence ratio (%) of the districts:\n{('=')*45}\n{np.round(df.district.value_counts()/df.shape[0]*100,2)}")
+
+# =============================================
+### column `old_div`
+print("The old_div (동) names:\n",df.old_div.unique())
+print("="*50)
+print("The number of 동 :",df.old_div.nunique()) # 272 
+print("="*50)
+print(f"The occurrence of 동:\n{('=')*45}\n{df.old_div.value_counts()}")
+
+# =============================================
+### Column `rent_type`
+# Rent type:
+# =============================================
+# 월세    153970
+# 전세    130815
+print(f"Rent type:\n{('=')*15}\n{df.rent_type.value_counts()}")
+
+### =============================================
+### Column `sign_date`
+### - year of contract
+### - month of contract
+# ======================
+# Year of Contract:
+# ======================
+# 2020    50310
+# 2019    48053
+# 2018    39927
+# 2017    34668
+# 2016    27497
+# 2015    24528
+# 2014    20699
+# 2013    16151
+# 2012    12482
+# 2011    10454
+# 2010       16
+print(f"Year of Contract:\n{('=')*22}\n{df.sign_date.dt.isocalendar().year.value_counts()}")
+
+# ======================
+# Month of Contract:
+# ======================
+# 1     28815
+# 2     28021
+# 12    25430
+# 8     24348
+# 7     24317
+# 3     24055
+# 6     22397
+# 10    22342
+# 5     21672
+# 11    21588
+# 4     21132
+# 9     20668
+print(f"Month of Contract:\n{('=')*22}\n{df.sign_date.dt.month.value_counts()}")
+
+# =============================================
+### Column `deposit`
+# deposit (in 10,000 won)
+# =======================
+# count    284785.000000
+# mean       9862.980750
+# std       10813.885617
+# min          20.000000
+# 25%        1500.000000
+# 50%        6500.000000
+# 75%       15000.000000
+# max      554100.000000
+print(df.deposit.describe())
+
+
+# =============================================
+### Column `rent_price`
+### - Lump-sum lease is not considered
+### - rent_price (in 10,000 won)
+# count    153970.000000
+# mean         53.417523
+# std          29.123966
+# min           1.000000
+# 25%          40.000000
+# 50%          50.000000
+# 75%          60.000000
+# max        2123.000000
+print(df[df.rent_type=="월세"].rent_price.describe())
+
+# =============================================
+### Column `unit_size`
+# Unit size (m²):
+# count    284785.000000
+# mean         30.842197
+# std          18.669453
+# min           3.400000
+# 25%          19.930000
+# 50%          24.910000
+# 75%          32.150002
+# max         445.119995
+df.unit_size.describe()
+
+# =============================================
+### Column `floor`
+# count    284785.000000
+# mean          7.913798
+# std           4.922598
+# min           1.000000
+# 25%           4.000000
+# 50%           7.000000
+# 75%          11.000000
+# max          65.000000
+df.floor.describe()
+
+# =============================================
+### Prior to data imputation on 8,476 empty cells
+### Column 건축년도
+# count    276309.000000
+# mean       2010.333116
+# std           6.434324
+# min        1972.000000
+# 25%        2004.000000
+# 50%        2013.000000
+# 75%        2016.000000
+# max        2021.000000
+df_backup[df_backup.건축년도.notna()].건축년도.describe()
+
+### Column `yr_built` (after data imputation)
+# count    284785.000000
+# mean       2010.412490
+# std           6.354031
+# min        1972.000000
+# 25%        2004.000000
+# 50%        2013.000000
+# 75%        2016.000000
+# max        2021.000000
+df.yr_built.describe()
+
+### ===================================================
+### EDA
+import matplotlib.pyplot as plt 
+import seaborn as sns 
+plt.style.use("ggplot")
+
+# ==================== Plots 1/3 ====================
+### - seaborn.jointplot() for numerical vars
+### - unit_size, deposit, rent_type
+grid= sns.jointplot(data=df,x="unit_size",y="deposit",hue="rent_type")
+# grid.fig.subtitle(f"Deposit w.r.t. Unit_Size\n전용면적(m²) 대비 보증금(만원)")#,kind="scatter",height=9)
+# plt.title(f"Deposit w.r.t. Unit_Size\n전용면적(m²) 대비 보증금(만원)")
+plt.tight_layout()
+plt.savefig("./img/exam08_q3.1_jointplot.png")
+plt.show()
+
+# ==================== Plots 2/3 ====================
+### Distribution of Districts along with sign_year
+### - seaborn.displot
+# add column: contract year
+df["sign_year"]= df.sign_date.dt.year.astype(int)
+# fig,ax= plt.subplots(figsize=(22,5))
+sns.displot(data=df,x="district",hue="sign_year",multiple="stack",shrink=.8, aspect=18/6) # "shrinking" the bars is helpful to emphasize the categorical nature of the axis # stat="density": when the subsets have unequal numbers of observations, comparing their distributions in terms of counts may not be ideal. One solution is to normalize the counts using the stat parameter
+plt.ylabel("number of contracts")
+plt.title(f"Distribution of Districts\n행정구별 계약 건수")
+plt.savefig("./img/exam08_q3.2_Distribution of Districts_with_sign_year.png")
+plt.show()
 
 # =====================================================
 ### Impute the monthly rent_price for the lump-sum lease
