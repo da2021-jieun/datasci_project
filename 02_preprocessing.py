@@ -473,12 +473,18 @@ plt.show()
 # ==================== Plots 3/3 ====================
 ### - seaborn.boxplot()
 ### ===================
+# fivethirtyeight, ggplot, tableau-colorblind10, Solarize_Light2, seaborn-poster, bmh, grayscale, seaborn-talk, seaborn-darkgrid
+plt.style.use("tableau-colorblind10")
 plt.figure(figsize=(10,5))
-top_districts= (df.district.value_counts().head(8).index.values)
+top_districts= (df[df.rent_type=="월세"].district.value_counts().head(8).index.values)
 sns.boxplot(x="rent_price",y="district",data=\
             df[df.district.isin(top_districts)],orient="h")
+plt.xlabel("Monthly Rent (in ₩10,000)")
+plt.ylabel("District")
 plt.tight_layout()
-plt.title(f"Top 8 Districts with Most Leases\n임차계약거래가 가장 빈번한 행정구 8곳") # 🇰🇷
+plt.title(f"Rent Distribution in 8 Districts with Most Leases\n임차계약이 가장 빈번한 행정구 8곳의 월세 분포") # 🇰🇷
+plt.margins()
+plt.grid()
 plt.show()
 
 # =====================================================
