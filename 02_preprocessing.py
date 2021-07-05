@@ -457,7 +457,6 @@ grid= sns.jointplot(data=df,x="unit_size",y="deposit",hue="rent_type")
 # grid.fig.subtitle(f"Deposit w.r.t. Unit_Size\n전용면적(m²) 대비 보증금(만원)")#,kind="scatter",height=9)
 # plt.title(f"Deposit w.r.t. Unit_Size\n전용면적(m²) 대비 보증금(만원)")
 plt.tight_layout()
-plt.savefig("./img/exam08_q3.1_jointplot.png")
 plt.show()
 
 # ==================== Plots 2/3 ====================
@@ -469,7 +468,6 @@ df["sign_year"]= df.sign_date.dt.year.astype(int)
 sns.displot(data=df,x="district",hue="sign_year",multiple="stack",shrink=.8, aspect=18/6) # "shrinking" the bars is helpful to emphasize the categorical nature of the axis # stat="density": when the subsets have unequal numbers of observations, comparing their distributions in terms of counts may not be ideal. One solution is to normalize the counts using the stat parameter
 plt.ylabel("number of contracts")
 plt.title(f"Distribution of Districts\n행정구별 계약 건수")
-plt.savefig("./img/exam08_q3.2_Distribution of Districts_with_sign_year.png")
 plt.show()
 
 # =====================================================
