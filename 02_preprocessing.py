@@ -470,6 +470,17 @@ plt.ylabel("number of contracts")
 plt.title(f"Distribution of Districts\n행정구별 계약 건수")
 plt.show()
 
+# ==================== Plots 3/3 ====================
+### - seaborn.boxplot()
+### ===================
+plt.figure(figsize=(10,5))
+top_districts= (df.district.value_counts().head(8).index.values)
+sns.boxplot(x="rent_price",y="district",data=\
+            df[df.district.isin(top_districts)],orient="h")
+plt.tight_layout()
+plt.title(f"Top 8 Districts with Most Leases\n임차계약거래가 가장 빈번한 행정구 8곳") # 🇰🇷
+plt.show()
+
 # =====================================================
 ### Impute the monthly rent_price for the lump-sum lease
 
