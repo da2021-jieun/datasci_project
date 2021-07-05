@@ -474,11 +474,11 @@ plt.show()
 ### - seaborn.boxplot()
 ### ===================
 # fivethirtyeight, ggplot, tableau-colorblind10, Solarize_Light2, seaborn-poster, bmh, grayscale, seaborn-talk, seaborn-darkgrid
-plt.style.use("tableau-colorblind10")
+plt.style.use("grayscale")
 plt.figure(figsize=(10,5))
 top_districts= (df[df.rent_type=="월세"].district.value_counts().head(8).index.values)
 sns.boxplot(x="rent_price",y="district",data=\
-            df[df.district.isin(top_districts)],orient="h")
+            df[(df.rent_type=="월세")&(df.district.isin(top_districts))],orient="h")
 plt.xlabel("Monthly Rent (in ₩10,000)")
 plt.ylabel("District")
 plt.tight_layout()
