@@ -536,6 +536,24 @@ plt.margins()
 # plt.savefig("./img/3.7_displot_yr_built_district.png")
 plt.show()
 
+# ==================== Plot 8 ====================
+
+# ==================== Plot 9 ====================
+
+# ==================== Plot 10 ====================
+
+## =================================================
+## ================ Post-processing ================
+### Find and remove outliers
+# https://towardsdatascience.com/ways-to-detect-and-remove-the-outliers-404d16608dba
+# 
+# 
+#  
+
+
+
+
+
 # =====================================================
 ### Impute the monthly rent_price for the lump-sum lease
 
