@@ -2,26 +2,9 @@
 
 ## Introduction
 ## Preprocessing
-### Set Hangeul Font, 한글 폰트 설정
-#### - For plotting purposes
-#### - matplotlib.rc("font",family=font_name)
 
-import matplotlib as mpl
-import matplotlib.font_manager as fm 
-
-# Nanum Gothic Coding
-# font_path= r"C:\tmp\NanumGothicCoding-Bold.ttf"
-
-# D2Coding
-font_path= r"C:\tmp\D2CodingBold-Ver1.3.2-20180524.ttf".replace("\\","/")
-
-font_name= fm.FontProperties(fname=font_path).get_name() # D2Coding
-
-mpl.rc("font",family=font_name)
-
-# =======================================================
+# =========================================
 import pandas as pd 
-
 path= "./data/"
 # csv_2021= "seoul_rental_2021.txt"
 csv_2020= "seoul_rental_2020.csv"
@@ -30,7 +13,7 @@ csv_2018= "seoul_rental_2018.csv"
 csv_2017= "seoul_rental_2017.csv"
 csv_2016= "seoul_rental_2016.txt"
 csv_2015= "seoul_rental_2015.txt"
-csv_2014= "seoul_rental_2014.txt"
+#csv_2014= "seoul_rental_2014.txt"
 csv_2014_clean= "seoul_rental_2014_clean.txt"
 csv_2013= "seoul_rental_2013.txt"
 csv_2012= "seoul_rental_2012.txt"
@@ -44,7 +27,7 @@ df_2018= pd.read_csv(path+csv_2018,encoding="cp949")
 df_2017= pd.read_csv(path+csv_2017,encoding="cp949")
 df_2016= pd.read_csv(path+csv_2016,encoding="utf-8")
 df_2015= pd.read_csv(path+csv_2015,encoding="utf-8")
-df_2014= pd.read_csv(path+csv_2014,encoding="utf-8")
+#df_2014= pd.read_csv(path+csv_2014,encoding="utf-8")
 df_2013= pd.read_csv(path+csv_2013,encoding="utf-8")
 df_2012= pd.read_csv(path+csv_2012,encoding="utf-8")
 df_2011= pd.read_csv(path+csv_2011,encoding="utf-8")
@@ -52,19 +35,19 @@ df_2011= pd.read_csv(path+csv_2011,encoding="utf-8")
 ### Merge 10-year records into one dataframe
 #### - Check the shape of all the dataframes
 
-df_list= [df_2020,df_2019,df_2018,df_2017,df_2016,df_2015,df_2014,df_2013,df_2012,df_2011]
-for i,df in enumerate(df_list):
-    year=2020-i
-    print(year,":",df.shape)
-print("="*35)
+# df_list= [df_2020,df_2019,df_2018,df_2017,df_2016,df_2015,df_2014,df_2013,df_2012,df_2011]
+# for i,df in enumerate(df_list):
+#     year=2020-i
+#     print(year,":",df.shape)
+# print("="*35)
 
 df_2014_clean= pd.read_csv(path+csv_2014_clean,encoding="utf-8")
 # df_2014_clean.shape
 
-df_list= [df_2020,df_2019,df_2018,df_2017,df_2016,df_2015,df_2014_clean,df_2013,df_2012,df_2011]
-for i,df in enumerate(df_list):
-    year=2020-i
-    print(year,":",df.shape)
+# df_list= [df_2020,df_2019,df_2018,df_2017,df_2016,df_2015,df_2014_clean,df_2013,df_2012,df_2011]
+# for i,df in enumerate(df_list):
+#     year=2020-i
+#     print(year,":",df.shape)
     
 # =======================================================
 #### - The two unnamed columns are from the year 2014.
@@ -85,7 +68,7 @@ for i,df in enumerate(df_list):
 df_list= [df_2020,df_2019,df_2018,df_2017,df_2016,df_2015,df_2014_clean,df_2013,df_2012,df_2011]
 df_backup= pd.concat(df_list,ignore_index=True)
 df= df_backup.copy()
-df.info()
+# df.info()
 # df.head(1)
 
 # =======================================================
@@ -110,12 +93,12 @@ df.info()
 #### - 계약년월 → sign_yymm
 #### - 계약일 → sign_dd
 #### - 보증금(만원) → deposit (in 10,000 won)
-#### - 월세(만원) → rent_price (in 10,000 won)
+#### - 월세(만원) → pay_monthly (in 10,000 won)
 #### - 층 → floor
 #### - 건축년도 → yr_built
 #### - 도로명 → str_addr
 
-cols= ["district1","lot_num","lotnum_1","lotnum_2","estate_name","rent_type","unit_size","sign_yymm","sign_dd","deposit","rent_price","floor","yr_built","str_addr"]
+cols= ["district1","lot_num","lotnum_1","lotnum_2","estate_name","rent_type","unit_size","sign_yymm","sign_dd","deposit","pay_monthly","floor","yr_built","str_addr"]
 
 df.columns= cols
 # df.head(1)
@@ -124,58 +107,28 @@ df.columns= cols
 # import numpy as np 
 # nan_index= np.where(df.str_addr.isna())
 # nan_index
-# nan_index[0]
 
 # =======================================================
-### Merge str_addr and estate_name
-#### - into new column street_addr, and
-#### - drop the two columns
-import numpy as np
-df["estate_name"]= df["estate_name"].astype(str).str.strip()
-df["str_addr"]= df.str_addr.astype(str).str.strip()
-# 도로명이 비어있는 레코드 중 다른 연도 파일에 도로명이 기록되어 있으면 복사하여 채운다
-# df["estate_name"]= df.estate_name.str.strip().astype(str)
-# df["str_addr"]= df.str_addr.str.strip().astype(str)
-
-# str_addr_series= [row["str_addr"].replace("nan","")+row["estate_name"] if row["str_addr"]=="nan" else row["str_addr"]+", "+row["estate_name"] for i,row in df.iterrows()]
-# df.insert(0,"street_addr",str_addr_series)
+### Fill in empty or whitespaced cells with estate_name
 #### 🇰🇷
 #### > 탐색 결과 도로명 컬럼에 whitespace만 있는 row가 파일마다 수천개 발견됨. 빈 cell은 단지명으로 채움
-### Fill in empty or whitespaced cells with estate_name
-idx_empty_addr= df[df.str_addr==" "].index
-idx_empty_addr.shape
 
-empty_strt_estate= list(df.iloc[idx_empty_addr].estate_name.unique()) # 261 properties
-estate_street_name= df[df.str_addr!=""][["estate_name","str_addr"]].drop_duplicates()
-ESTATE_STR_ADDR= {} # KEY estate_name: VALUE street_addr
-for i,row in estate_street_name.iterrows():
-    # list of estate without street addr
-    for es in empty_strt_estate:
-        if es in row["estate_name"]:
-            ESTATE_STR_ADDR[es]= row.str_addr
-            continue
-
-# =======================================================
-# 도로 주소가 없는 셀에 단지명을 채워넣음.
+# Of 32419 cells of length 1,
+# - 32418 cells has one whitespace,
+# 🇰🇷 도로 주소가 없는 " " 셀에 단지명을 채워넣음.
 # 32418 rows 
-from timeit import default_timer as timer
-start_t= timer()
-for i in idx_empty_addr:
-    estate_name= df.loc[i,"estate_name"]
-    str_addr= ESTATE_STR_ADDR.get(estate_name)
-    df.loc[i,"str_addr"]= str_addr if str_addr is not None else estate_name
-elapsed_t= timer()-start_t
-print(elapsed_t,"seconds")
+df["estate_name"]= df.estate_name.astype(str)
+df["str_addr"]= df.str_addr.astype(str)
+idx= df[(df.str_addr.str.len()==1)&(df.str_addr==" ")].index # idx.shape
+df.loc[idx,"str_addr"]= df.iloc[idx].estate_name
+df.iloc[idx].str_addr
 
-#### function equivalent to the above
-def replace_none(estate_name,str_addr):
-    if str_addr is None:
-        return estate_name
-    else:
-        return str_addr
-df.loc[idx_empty_addr,"str_addr"]=df.iloc[idx_empty_addr][["estate_name","str_addr"]].apply(lambda x: replace_none(*x),axis=1)#.drop_duplicates()
-
-# =======================================================
+#### and the remaining one cell has the value of "5"; will be filled manually with its street address 
+# index 166852, current str_addr: "5"
+# manually change it to "선유로11길 5"
+idx_one= df[(df.str_addr.str.len()==1)&(df.str_addr!=" ")].index # idx.shape
+df.loc[idx_one,"str_addr"]= "선유로11길 "+df.iloc[idx_one].str_addr.str[0]
+### ==================================================
 
 # df.isna().sum()
 
@@ -185,24 +138,21 @@ df.loc[idx_empty_addr,"str_addr"]=df.iloc[idx_empty_addr][["estate_name","str_ad
 #### - lot_num_2
 #### - estate_name
 #### - str_addr
-
 df.drop(["lot_num","lotnum_2","estate_name"],axis=1,inplace=True)
 # df.head(1)
 
 # =======================================================
 ### New column district
 #### - 전체 데이터가 서울 지역에 한정되어 있으므로 "서울특별시", 동 이름 제거
-
 df.insert(0,"district",[val.split()[1] for i,val in df.district1.iteritems() ])
-df.head(1)
+# df.head(1)
 
 df.insert(1,"old_div",[f"{val.split()[2]}" for i,val in df.district1.iteritems()])
-df.head(1)
+# df.head(1)
 
 # =======================================================
 ### Drop columns
 #### - district1
-
 df.drop("district1",axis=1,inplace=True)
 # df.head(1)
 
@@ -218,56 +168,57 @@ def find_median(col,df):
 df.loc[df.yr_built.isna(),"yr_built"]= find_median("yr_built", df) # median: 2013
 df["yr_built"]= df.yr_built.astype(int)
 
-df.head(1)
+# df.head(1)
+# df.isna().values.any()
 # df.isna().sum()
-# df.yr_built.nunique()
-# df.yr_built.unique()
 
 # =======================================================
 ### Create new column sign_date
 #### - create `sign_date` from sign_yymm and sign_dd
 #### 🇰🇷
 #### > 계약년월(예: 202004)과 계약일(11)을 합쳐 sign_date (예: 2020-04-11) 생성
-
-# df.sign_dd.value_counts()
-
-#### sign_dd ratio 
-(df.sign_dd.value_counts()/df.shape[0])
-
 sign_date= pd.to_datetime((df.sign_yymm.astype(str)+df.sign_dd.astype(str)),format="%Y%m%d")
 df.insert(7,"sign_date",sign_date)
 df.head(1)
 
-# =======================================================
+# df.sign_dd.value_counts()
+
+#### sign_dd ratio 
+# (df.sign_dd.value_counts()/df.shape[0])
+
+# =================================================
 ### rent_type ratio
 #### ratio of monthly and lump-sum 
-df.rent_type.value_counts()
+# df.rent_type.value_counts()
 
 #### 전세 계약 건물의 건축년도 분포
-df[df.rent_type=="전세"]["yr_built"].value_counts()
-
-# df.info()
+# df[df.rent_type=="전세"]["yr_built"].value_counts()
 
 # ======================================================
 ### Change dtype of `deposit` to int
 #### - First, remove the thousand-separator
 #### - and convert to int
+#### 🇰🇷 
+#### > 보증금 컬럼의 구분자(,)를 제거하고 dtype을 int로 변환
 df.deposit.astype(str).str.contains(",").sum()
 # df["deposit"]= df_backup["보증금(만원)"]
 df["deposit"]= df.astype(str).deposit.str.replace(",","").astype(int)
 
 ### =====================================================
 ### Change dtype of `lotnum_1`,`sign_yymm`,`sign_dd`,`rent_price`,`floor` to int32
+#### 🇰🇷 
+#### > dtype을 int32/float32로 변환하며 memory usage ↓
 import numpy as np
 df.lotnum_1= df.lotnum_1.astype(int)
 df.sign_yymm= df.sign_yymm.astype(int)
 df.sign_dd= df.sign_dd.astype(int)
 df.unit_size= df.unit_size.astype(np.float32)
-df.rent_price= df.rent_price.astype(int)
+df.pay_monthly= df.pay_monthly.astype(int)
 df.floor= df.floor.astype(int)
 
 # df= df.convert_dtypes()
 # df.dtypes
+df.info()
 
 ### ===============================================
 ### ============== basic statistics ==============
@@ -382,9 +333,9 @@ print(df.deposit.describe())
 
 
 # =============================================
-### Column `rent_price`
+### Column `pay_monthly`
 ### - Lump-sum lease is not considered
-### - rent_price (in 10,000 won)
+### - pay_monthly (in 10,000 won)
 # count    153970.000000
 # mean         53.417523
 # std          29.123966
@@ -393,7 +344,7 @@ print(df.deposit.describe())
 # 50%          50.000000
 # 75%          60.000000
 # max        2123.000000
-print(df[df.rent_type=="월세"].rent_price.describe())
+print(df[df.rent_type=="월세"].pay_monthly.describe())
 
 # =============================================
 ### Column `unit_size`
@@ -444,40 +395,68 @@ df_backup[df_backup.건축년도.notna()].건축년도.describe()
 # max        2021.000000
 df.yr_built.describe()
 
-### ===================================================
-### EDA
+## =================================================
+## ====================== EDA ======================
+### Set Hangeul Font, 한글 폰트 설정
+#### - For plotting purposes
+#### - matplotlib.rc("font",family=font_name)
+import matplotlib as mpl
+import matplotlib.font_manager as fm 
 import matplotlib.pyplot as plt 
 import seaborn as sns 
-plt.style.use("ggplot")
 
-# ==================== Plots 1/3 ====================
+# sys_font=fm.findSystemFonts()
+# custom_font= "NotoSansKR"
+# fonts = [f for f in sys_font if font in f]
+# print(f"Number of fonts: {len(fonts)}")
+# for fnt in fonts:
+#   print(fnt)
+
+# ======== D2Coding ========
+font_path= r"C:\Users\Jieun\AppData\Local\Microsoft\Windows\Fonts\D2CodingBold-Ver1.3.2-20180524.ttf".replace("\\","/")
+
+#Noto Sans KR
+# font_path_noto= r"C:\Users\Jieun\AppData\Local\Microsoft\Windows\Fonts\NotoSansKR-Medium.otf".replace("\\","/") 
+
+font_name= fm.FontProperties(fname=font_path).get_name() # D2Coding
+
+mpl.rc("font",family=font_name)
+print(plt.rcParams['font.family'])
+
+# ==================== Plot 1 ====================
 ### - seaborn.jointplot() for numerical vars
 ### - unit_size, deposit, rent_type
+plt.style.use("bmh")
 grid= sns.jointplot(data=df,x="unit_size",y="deposit",hue="rent_type")
 # grid.fig.subtitle(f"Deposit w.r.t. Unit_Size\n전용면적(m²) 대비 보증금(만원)")#,kind="scatter",height=9)
 # plt.title(f"Deposit w.r.t. Unit_Size\n전용면적(m²) 대비 보증금(만원)")
 plt.tight_layout()
+plt.savefig("./img/3.1_jointplot.png")
 plt.show()
 
-# ==================== Plots 2/3 ====================
+# ==================== Plot 2 ====================
 ### Distribution of Districts along with sign_year
 ### - seaborn.displot
 # add column: contract year
+plt.style.use("bmh")
 df["sign_year"]= df.sign_date.dt.year.astype(int)
 # fig,ax= plt.subplots(figsize=(22,5))
 sns.displot(data=df,x="district",hue="sign_year",multiple="stack",shrink=.8, aspect=18/6) # "shrinking" the bars is helpful to emphasize the categorical nature of the axis # stat="density": when the subsets have unequal numbers of observations, comparing their distributions in terms of counts may not be ideal. One solution is to normalize the counts using the stat parameter
-plt.ylabel("number of contracts")
-plt.title(f"Distribution of Districts\n행정구별 계약 건수")
+plt.ylabel("number of contracts | 계약 건수")
+plt.title(f"Distribution of Districts | 행정구별 계약 건수")
+plt.margins()
+plt.savefig("./img/3.2_Distribution of Districts_with_sign_year.png")
 plt.show()
 
-# ==================== Plots 3/3 ====================
+# ==================== Plot 3 ====================
 ### - seaborn.boxplot()
 ### ===================
+# print(plt.style.available)
 # fivethirtyeight, ggplot, tableau-colorblind10, Solarize_Light2, seaborn-poster, bmh, grayscale, seaborn-talk, seaborn-darkgrid
 plt.style.use("grayscale")
 plt.figure(figsize=(10,5))
 top_districts= (df[df.rent_type=="월세"].district.value_counts().head(8).index.values)
-sns.boxplot(x="rent_price",y="district",data=\
+sns.boxplot(x="pay_monthly",y="district",data=\
             df[(df.rent_type=="월세")&(df.district.isin(top_districts))],orient="h")
 plt.xlabel("Monthly Rent (in ₩10,000)")
 plt.ylabel("District")
@@ -485,6 +464,76 @@ plt.tight_layout()
 plt.title(f"Rent Distribution in 8 Districts with Most Leases\n임차계약이 가장 빈번한 행정구 8곳의 월세 분포") # 🇰🇷
 plt.margins()
 plt.grid()
+plt.savefig("./img/exam08_q3.3_boxplot_district_rent.png")
+plt.show()
+
+
+# ======== D2Coding ========
+font_path_2= r"C:\Users\Jieun\AppData\Local\Microsoft\Windows\Fonts\D2CodingBold-Ver1.3.2-20180524.ttf".replace("\\","/")
+#D2CodingBold-Ver1.3.2-20180524.ttf
+
+font_name= fm.FontProperties(fname=font_path).get_name() # D2Coding
+
+mpl.rc("font",family=font_name)
+print(mpl.pyplot.rcParams['font.family'])
+
+# ==================== Plot 4 ====================
+### - seaborn.boxplot() for numerical variables
+### - unit_size per rent_type
+import matplotlib.pyplot as plt 
+import seaborn as sns 
+plt.style.use('seaborn-bright')
+# print(plt.style.available)
+# ['Solarize_Light2', 'bmh', 'dark_background', 'fivethirtyeight', 'ggplot', 'grayscale', 'seaborn-bright', 'seaborn-colorblind', 'seaborn-poster', 'seaborn-ticks', 'tableau-colorblind10']
+plt.figure(figsize=(10,5))
+sns.boxplot(x="unit_size",y="rent_type",data=df)
+plt.xlabel("unit size (m²) | 전용면적(m²)")
+plt.ylabel("rent type | 전월세구분")
+plt.savefig("./img/3.4_boxplot_unit_size_rent_type.png")
+plt.show()
+
+# ==================== Plot 5 ====================
+### - seaborn.boxplot() for numerical variables
+### - deposit per rent_type, rent_price
+import matplotlib.pyplot as plt 
+import seaborn as sns 
+plt.style.use('bmh')
+# print(plt.style.available)
+# ['Solarize_Light2', 'bmh', 'dark_background', 'fivethirtyeight', 'ggplot', 'grayscale', 'seaborn-bright', 'seaborn-colorblind', 'seaborn-poster', 'seaborn-ticks', 'tableau-colorblind10']
+plt.figure(figsize=(15,6))
+sns.boxplot(x="deposit",y="rent_type",data=df)
+plt.xlabel("deposit (in ₩10,000) | 보증금(만원)")
+plt.ylabel("rent type | 전월세구분")
+plt.savefig("./img/3.5_boxplot_deposit_rent_type_bmh.png")
+plt.show()
+
+# ==================== Plot 6 ====================
+### - seaborn.boxplot() for numerical variables
+### - yr_built per rent_type
+import matplotlib.pyplot as plt 
+import seaborn as sns 
+plt.style.use('tableau-colorblind10')
+# print(plt.style.available)
+# ['Solarize_Light2', 'bmh', 'dark_background', 'fivethirtyeight', 'ggplot', 'grayscale', 'seaborn-bright', 'seaborn-colorblind', 'seaborn-poster', 'seaborn-ticks', 'tableau-colorblind10']
+plt.figure(figsize=(11,5))
+sns.boxplot(x="yr_built",y="rent_type",data=df)
+plt.xlabel("yr_built | 건축년도")
+plt.ylabel("rent type | 전월세구분")
+plt.savefig("./img/3.6_boxplot_yr_built_rent_type.png")
+plt.show()
+
+# ==================== Plot 7 ====================
+### - seaborn.boxplot() 
+### - yr_built across districts
+plt.style.use("bmh")
+# fig,ax= plt.subplots(figsize=(22,5))
+plt.figure(figsize=(13,9))
+sns.boxplot(x="yr_built",y="district",data=df)
+plt.xlabel("yr_built | 건축년도")
+plt.ylabel("district | 행정구")
+plt.title(f"Construction Year Across Districts  | 행정구별 건축년도 분포")
+plt.margins()
+# plt.savefig("./img/3.7_displot_yr_built_district.png")
 plt.show()
 
 # =====================================================
@@ -646,7 +695,7 @@ df_lumpsum= df[df.rent_type=="전세"].drop("rent_type",axis=1)
 df_monthly= df[df.rent_type=="월세"].drop("rent_type",axis=1)
 # 전세 데이터세트 중 월세가 0보다 큰 3건은 고려 안 함
 # drop rent_price column from df_lumpsum
-df_lumpsum.drop("rent_price",axis=1) 
+df_lumpsum.drop("pay_monthly",axis=1) 
 df_lumpsum.shape, df_monthly.shape
 
 df.head(1)
