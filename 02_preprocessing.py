@@ -464,7 +464,7 @@ plt.tight_layout()
 plt.title(f"Rent Distribution in 8 Districts with Most Leases\n임차계약이 가장 빈번한 행정구 8곳의 월세 분포") # 🇰🇷
 plt.margins()
 plt.grid()
-plt.savefig("./img/exam08_q3.3_boxplot_district_rent.png")
+plt.savefig("./img/3.3_boxplot_district_rent.png")
 plt.show()
 
 
