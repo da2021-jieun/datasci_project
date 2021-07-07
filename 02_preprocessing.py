@@ -165,7 +165,8 @@ df.drop("district1",axis=1,inplace=True)
 def find_median(col,df):
     return df[df[col].notna()][col].median()
 
-df.loc[df.yr_built.isna(),"yr_built"]= find_median("yr_built", df) # median: 2013
+# df.loc[df.yr_built.isna(),"yr_built"]= find_median("yr_built", df) # median: 2013
+df.yr_built.fillna(df.yr_built.median(),inplace=True)
 df["yr_built"]= df.yr_built.astype(int)
 
 # df.head(1)
@@ -565,8 +566,10 @@ plt.show()
 # df["rent_price_adj"]= ((df.deposit - deposit_median)*.0469)/12
 ### replace zero cells with the original rent_price for monthly rent type 월세 계약 건은 원래의 값으로 대체한다
 # df.loc[df.rent_price_adj<=0,"rent_price_adj"]= df.loc[df.rent_type=="월세","rent_price"]
-# =====================================================
 
+
+# =====================================================
+## FEATURE ENGINEERING
 ### GPS coordinates for the 25 districts
 ### - ['강남구', '강동구', '강북구', '강서구', '관악구', '광진구', '구로구', '금천구', '노원구',       '도봉구', '동대문구', '동작구', '마포구', '서대문구', '서초구', '성동구', '성북구', '송파구',       '양천구', '영등포구', '용산구', '은평구', '종로구', '중구', '중랑구']
 
