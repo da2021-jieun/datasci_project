@@ -35,122 +35,75 @@
 <section id="eda-feature-engineering-and-regression-modelling-with-real-estate-data" class="slide level1">
 <h1>EDA, Feature Engineering, and Regression Modelling with Real Estate Data</h1>
 <ul>
-<li><p>What the project is about</p></li>
-<li><p>Dataset</p></li>
-<li><p>Sections</p>
+<li>What the project is about</li>
+<li>Dataset</li>
+<li>Sections
 <ul>
-<li><p>Introduction</p></li>
-<li><p>Pre-processing</p></li>
-<li><p>EDA</p></li>
-<li><p>Feature Engineering</p></li>
-<li><p>Modelling</p></li>
-<li><p>Performance Evaluation</p></li>
-<li><p>Conlusion</p></li>
+<li>Introduction</li>
+<li>Pre-processing</li>
+<li>EDA</li>
+<li>Feature Engineering</li>
+<li>Modelling</li>
+<li>Performance Evaluation</li>
+<li>Conlusion</li>
 </ul></li>
 </ul>
-<table style="width:6%;">
-<colgroup>
-<col style="width: 5%" />
-</colgroup>
-<tbody>
-<tr class="odd">
-<td>## What the project is about</td>
-</tr>
-<tr class="even">
-<td>- Practice in data analytics/science</td>
-</tr>
-<tr class="odd">
-<td>- Demonstrates a typical pipeline: preprocessing ⇒ EDA ⇔ feature engineering ⇔ modelling ⇒ performance evaluation</td>
-</tr>
-<tr class="even">
-<td>- Explores real estate rentals data to predict the amount of deposit or monthly payment</td>
-</tr>
-</tbody>
-</table>
+<h2 id="what-the-project-is-about">What the project is about</h2>
+<ul>
+<li>Practice in data analytics/science</li>
+<li>Demonstrates a typical pipeline: preprocessing ⇒ EDA ⇔ feature engineering ⇔ modelling ⇒ performance evaluation</li>
+<li>Explores real estate rentals data to predict the amount of deposit or monthly payment</li>
+</ul>
 <h2 id="dataset">Dataset</h2>
 <ul>
-<li><p>Seoul Officetel rentals data from 2011-2021</p></li>
-<li><p>Source: <a href="www.data.go.kr">공공데이터포털</a></p></li>
+<li>Seoul Officetel rentals data from 2011-2021</li>
+<li>Source: <a href="www.data.go.kr">공공데이터포털</a></li>
 </ul>
-<table style="width:6%;">
-<colgroup>
-<col style="width: 5%" />
-</colgroup>
-<tbody>
-<tr class="odd">
-<td>## Dataset</td>
-</tr>
-<tr class="even">
-<td>- Download available on a yearly basis</td>
-</tr>
-<tr class="odd">
-<td>- Link: <a href="https://www.data.go.kr/data/3050988/fileData.do">서울 오피스텔 전월세 거래 데이터</a></td>
-</tr>
-</tbody>
-</table>
 <h2 id="dataset-1">Dataset</h2>
+<ul>
+<li>Download available on a yearly basis</li>
+<li>Link: <a href="https://www.data.go.kr/data/3050988/fileData.do">서울 오피스텔 전월세 거래 데이터</a></li>
+</ul>
+<h2 id="dataset-2">Dataset</h2>
 <ul>
 <li><p>Train set (2011–2020): 284785 rows, 14 columns</p>
 <ul>
-<li><p>시군구 | 번지 | 본번 | 부번 | 단지명 | 도로명</p></li>
-<li><p>전월세구분 | 전용면적(㎡) | 층 | 건축년도</p></li>
-<li><p>계약년월 | 계약일</p></li>
-<li><p>보증금(만원) | 월세(만원)</p></li>
+<li>시군구 | 번지 | 본번 | 부번 | 단지명 | 도로명</li>
+<li>전월세구분 | 전용면적(㎡) | 층 | 건축년도</li>
+<li>계약년월 | 계약일</li>
+<li>보증금(만원) | 월세(만원)</li>
 </ul></li>
 </ul>
-<table style="width:6%;">
-<colgroup>
-<col style="width: 5%" />
-</colgroup>
-<tbody>
-<tr class="odd">
-<td>## Introduction</td>
-</tr>
-<tr class="even">
-<td>- To be added</td>
-</tr>
-</tbody>
-</table>
+<h2 id="introduction">Introduction</h2>
+<ul>
+<li>To be added</li>
+</ul>
 <h2 id="pre-processing">Pre-Processing</h2>
 <ul>
-<li>Data description automatically added to the file when downloading</li>
-</ul>
+<li>Data description automatically added to the file when downloading
 <center>
 <img src="./img/1.1_data_description.png" alt="description added to file" width="500">
-</center>
-<table style="width:6%;">
-<colgroup>
-<col style="width: 5%" />
-</colgroup>
-<tbody>
-<tr class="odd">
-<td>## Pre-Processing</td>
-</tr>
-<tr class="even">
-<td>- Needs removal before <code>pandas.read_csv()</code></td>
-</tr>
-<tr class="odd">
-<td>- Done manually ✔️ or programmatically</td>
-</tr>
-</tbody>
-</table>
+</center></li>
+</ul>
 <h2 id="pre-processing-1">Pre-Processing</h2>
 <ul>
-<li>2014 file is “untidy”</li>
+<li>Needs removal before <code>pandas.read_csv()</code></li>
+<li>Done manually ✔️ or programmatically</li>
 </ul>
-<center>
-<img src="./img/1.2_csv_2014.jpg" alt="2014 file is untidy" height="300">
-</center>
-</section>
-<section class="slide level1">
-
 <h2 id="pre-processing-2">Pre-Processing</h2>
 <ul>
-<li>To merge 10 datasets into one <code>pandas.DataFrame</code></li>
+<li>2014 file is “untidy”
+<center>
+<img src="./img/1.2_csv_2014.jpg" alt="2014 file is untidy" height="300">
+</center></li>
 </ul>
+<h2 id="pre-processing-3">Pre-Processing</h2>
+<ul>
+<li>To merge 10 datasets into one <code>pandas.DataFrame</code>
 <center>
 <img src="./img/1.3_merge_dataframe.jpg" alt="merge datasets into one dataframe" height="300">
-</center>
+</center></li>
+</ul>
 </section>
     </div>
   </div>
