@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Jieun K">
+  <meta name="dcterms.date" content="2021-07-09">
+  <title>Practice in Data Analytics</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="./revealjs/dist/reset.css">
+  <link rel="stylesheet" href="./revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="./revealjs/dist/theme/black.css" id="theme">
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Practice in Data Analytics</h1>
+  <p class="author">Jieun K</p>
+  <p class="date">July 9, 2021</p>
+</section>
+
+<section>
+<section id="eda-feature-engineering-and-regression-modelling-with-real-estate-data" class="title-slide slide level2">
+<h2>EDA, Feature Engineering, and Regression Modelling with Real Estate Data</h2>
+
+</section>
+<section class="slide level6">
+
+</section></section>
+<section>
+<section id="what-the-project-is-about" class="title-slide slide level2">
+<h2>What the project is about</h2>
+
+</section>
+<section class="slide level6">
+
+<p>Practice in data analytics/science</p>
+</section>
+<section class="slide level6">
+
+<p>Demonstrate a typical pipeline ➡️</p>
+</section>
+<section class="slide level6">
+
+<p>Preprocessing ⇒ EDA ⇔ Feature Engineering ⇔ Modelling ⇒ Performance Evaluation</p>
+</section>
+<section class="slide level6">
+
+<p>Explore real estate data and predict the amount of deposit or monthly payment</p>
+</section>
+<section class="slide level6">
+
+</section></section>
+<section>
+<section id="dataset" class="title-slide slide level2">
+<h2>Dataset</h2>
+
+</section>
+<section class="slide level6">
+
+<ul>
+<li>Seoul Officetel rentals data from 2011-2021</li>
+</ul>
+</section>
+<section class="slide level6">
+
+<ul>
+<li><a href="www.data.go.kr">공공데이터포털</a></li>
+</ul>
+</section>
+<section class="slide level6">
+
+<p>Download available on a yearly basis</p>
+</section>
+<section class="slide level6">
+
+<ul>
+<li><a href="https://www.data.go.kr/data/3050988/fileData.do">서울 오피스텔 전월세 거래 데이터</a></li>
+</ul>
+</section>
+<section class="slide level6">
+
+<p>Train set (2011–2020): 284785 rows, 14 columns</p>
+</section>
+<section class="slide level6">
+
+<ul>
+<li>시군구 | 번지 | 본번 | 부번 | 단지명 | 도로명</li>
+<li>전월세구분 | 전용면적(㎡) | 층 | 건축년도</li>
+<li>계약년월 | 계약일</li>
+<li>보증금(만원) | 월세(만원)</li>
+</ul>
+</section>
+<section class="slide level6">
+
+</section></section>
+<section>
+<section id="sections" class="title-slide slide level2">
+<h2>Sections</h2>
+
+</section>
+<section class="slide level6">
+
+<ul>
+<li>Introduction</li>
+<li>Pre-processing</li>
+<li>EDA</li>
+<li>Feature Engineering</li>
+<li>Modelling</li>
+<li>Performance Evaluation</li>
+<li>Conlusion</li>
+</ul>
+</section>
+<section class="slide level6">
+
+</section></section>
+<section>
+<section id="pre-processing" class="title-slide slide level2">
+<h2>Pre-Processing</h2>
+
+</section>
+<section class="slide level6">
+
+<p>Data description automatically added to the file when downloading</p>
+</section>
+<section class="slide level6">
+
+<figure>
+<img data-src="./img/1.1_data_description.png" alt="Data description is automatically added to the file when downloading" /><figcaption aria-hidden="true">Data description is automatically added to the file when downloading</figcaption>
+</figure>
+</section>
+<section class="slide level6">
+
+<ul>
+<li><p>Needs removal before <code>pandas.read_csv()</code></p></li>
+<li><p>Done manually ✔️ or programmatically</p></li>
+</ul>
+</section>
+<section class="slide level6">
+
+<p>The 2014 data is “untidy”</p>
+</section>
+<section class="slide level6">
+
+<figure>
+<img data-src="./img/1.2_csv_2014.jpg" alt="The csv file for the year 2014 is untidy" /><figcaption aria-hidden="true">The csv file for the year 2014 is untidy</figcaption>
+</figure>
+</section>
+<section class="slide level6">
+
+<p>Merge 10 datasets into one <code>pandas.DataFrame</code></p>
+</section>
+<section class="slide level6">
+
+<figure>
+<img data-src="./img/1.3_merge_dataframe.jpg" alt="Merge datasets into one dataframe" /><figcaption aria-hidden="true">Merge datasets into one dataframe</figcaption>
+</figure>
+</section>
+<section class="slide level6">
+
+</section></section>
+<section>
+<section id="to-be-continued-.-.-." class="title-slide slide level2">
+<h2>To be continued . . .</h2>
+
+</section>
+<section class="slide level6">
+
+</section></section>
+<section id="thank-you" class="title-slide slide level2">
+<h2>Thank YOU 🤓</h2>
+
+</section>
+    </div>
+  </div>
+
+  <script src="./revealjs/dist/reveal.js"></script>
+
+  // reveal.js plugins
+  <script src="./revealjs/plugin/notes/notes.js"></script>
+  <script src="./revealjs/plugin/search/search.js"></script>
+  <script src="./revealjs/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+      
+        // Push each slide change to the browser history
+        history: true,
+
+        // reveal.js plugins
+        plugins: [
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>
