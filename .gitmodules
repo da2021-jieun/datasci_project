@@ -1,0 +1,3 @@
+[submodule "datasci_project"]
+	path = datasci_project
+	url = https://github.com/da2021-jieun/datasci_project.git

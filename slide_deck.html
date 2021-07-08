@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Jieun K">
+  <meta name="dcterms.date" content="2021-07-09">
+  <title>Practice in Data Analytics</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="./revealjs/dist/reset.css">
+  <link rel="stylesheet" href="./revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="./revealjs/dist/theme/black.css" id="theme">
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Practice in Data Analytics</h1>
+  <p class="author">Jieun K</p>
+  <p class="date">July 9, 2021</p>
+</section>
+
+<section id="eda-feature-engineering-and-regression-modelling-with-real-estate-data" class="slide level1">
+<h1>EDA, Feature Engineering, and Regression Modelling with Real Estate Data</h1>
+<ul>
+<li><p>What the project is about</p></li>
+<li><p>Dataset</p></li>
+<li><p>Sections</p>
+<ul>
+<li><p>Introduction</p></li>
+<li><p>Pre-processing</p></li>
+<li><p>EDA</p></li>
+<li><p>Feature Engineering</p></li>
+<li><p>Modelling</p></li>
+<li><p>Performance Evaluation</p></li>
+<li><p>Conlusion</p></li>
+</ul></li>
+</ul>
+<table style="width:6%;">
+<colgroup>
+<col style="width: 5%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td>## What the project is about</td>
+</tr>
+<tr class="even">
+<td>- Practice in data analytics/science</td>
+</tr>
+<tr class="odd">
+<td>- Demonstrates a typical pipeline: preprocessing ⇒ EDA ⇔ feature engineering ⇔ modelling ⇒ performance evaluation</td>
+</tr>
+<tr class="even">
+<td>- Explores real estate rentals data to predict the amount of deposit or monthly payment</td>
+</tr>
+</tbody>
+</table>
+<h2 id="dataset">Dataset</h2>
+<ul>
+<li><p>Seoul Officetel rentals data from 2011-2021</p></li>
+<li><p>Source: <a href="www.data.go.kr">공공데이터포털</a></p></li>
+</ul>
+<table style="width:6%;">
+<colgroup>
+<col style="width: 5%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td>## Dataset</td>
+</tr>
+<tr class="even">
+<td>- Download available on a yearly basis</td>
+</tr>
+<tr class="odd">
+<td>- Link: <a href="https://www.data.go.kr/data/3050988/fileData.do">서울 오피스텔 전월세 거래 데이터</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="dataset-1">Dataset</h2>
+<ul>
+<li><p>Train set (2011–2020): 284785 rows, 14 columns</p>
+<ul>
+<li><p>시군구 | 번지 | 본번 | 부번 | 단지명 | 도로명</p></li>
+<li><p>전월세구분 | 전용면적(㎡) | 층 | 건축년도</p></li>
+<li><p>계약년월 | 계약일</p></li>
+<li><p>보증금(만원) | 월세(만원)</p></li>
+</ul></li>
+</ul>
+<table style="width:6%;">
+<colgroup>
+<col style="width: 5%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td>## Introduction</td>
+</tr>
+<tr class="even">
+<td>- To be added</td>
+</tr>
+</tbody>
+</table>
+<h2 id="pre-processing">Pre-Processing</h2>
+<ul>
+<li>Data description automatically added to the file when downloading</li>
+</ul>
+<center>
+<img src="./img/1.1_data_description.png" alt="description added to file" width="500">
+</center>
+<table style="width:6%;">
+<colgroup>
+<col style="width: 5%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td>## Pre-Processing</td>
+</tr>
+<tr class="even">
+<td>- Needs removal before <code>pandas.read_csv()</code></td>
+</tr>
+<tr class="odd">
+<td>- Done manually ✔️ or programmatically</td>
+</tr>
+</tbody>
+</table>
+<h2 id="pre-processing-1">Pre-Processing</h2>
+<ul>
+<li>2014 file is “untidy”</li>
+</ul>
+<center>
+<img src="./img/1.2_csv_2014.jpg" alt="2014 file is untidy" height="300">
+</center>
+</section>
+<section class="slide level1">
+
+<h2 id="pre-processing-2">Pre-Processing</h2>
+<ul>
+<li>To merge 10 datasets into one <code>pandas.DataFrame</code></li>
+</ul>
+<center>
+<img src="./img/1.3_merge_dataframe.jpg" alt="merge datasets into one dataframe" height="300">
+</center>
+</section>
+    </div>
+  </div>
+
+  <script src="./revealjs/dist/reveal.js"></script>
+
+  // reveal.js plugins
+  <script src="./revealjs/plugin/notes/notes.js"></script>
+  <script src="./revealjs/plugin/search/search.js"></script>
+  <script src="./revealjs/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+      
+        // Push each slide change to the browser history
+        history: true,
+
+        // reveal.js plugins
+        plugins: [
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>
