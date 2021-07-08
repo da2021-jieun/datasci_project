@@ -32,72 +32,91 @@
   <p class="date">July 9, 2021</p>
 </section>
 
-<section id="eda-feature-engineering-and-regression-modelling-with-real-estate-data" class="slide level2">
-<h2>EDA, Feature Engineering, and Regression Modelling with Real Estate Data</h2>
+<section id="eda-feature-engineering-and-regression-modelling-with-real-estate-data" class="slide level3">
+<h3>EDA, Feature Engineering, and Regression Modelling with Real Estate Data</h3>
+<table style="width:6%;">
+<colgroup>
+<col style="width: 5%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>### What the project is about - Practice in data analytics/science</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>- Demonstrates a typical pipeline: preprocessing ⇒ EDA ⇔ feature engineering ⇔ modelling ⇒ performance evaluation</td>
+</tr>
+</tbody>
+</table>
 <ul>
-<li>What the project is about</li>
-<li>Dataset</li>
-<li>Sections
-<ul>
-<li>Introduction</li>
-<li>Pre-processing</li>
-<li>EDA</li>
-<li>Feature Engineering</li>
-<li>Modelling</li>
-<li>Performance Evaluation</li>
-<li>Conlusion</li>
-</ul></li>
-</ul>
-<h3 id="what-the-project-is-about">What the project is about</h3>
-<ul>
-<li>Practice in data analytics/science</li>
-<li>Demonstrates a typical pipeline: preprocessing ⇒ EDA ⇔ feature engineering ⇔ modelling ⇒ performance evaluation</li>
 <li>Explores real estate rentals data to predict the amount of deposit or monthly payment</li>
 </ul>
-<h3 id="dataset">Dataset</h3>
+<table style="width:6%;">
+<colgroup>
+<col style="width: 5%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>### Dataset - Seoul Officetel rentals data from 2011-2021 - Source: <a href="www.data.go.kr">공공데이터포털</a></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>- Download available on a yearly basis - Link: <a href="https://www.data.go.kr/data/3050988/fileData.do">서울 오피스텔 전월세 거래 데이터</a></td>
+</tr>
+</tbody>
+</table>
 <ul>
-<li>Seoul Officetel rentals data from 2011-2021</li>
-<li>Source: <a href="www.data.go.kr">공공데이터포털</a></li>
-</ul>
-<h3 id="dataset-1">Dataset</h3>
-<ul>
-<li>Download available on a yearly basis</li>
-<li>Link: <a href="https://www.data.go.kr/data/3050988/fileData.do">서울 오피스텔 전월세 거래 데이터</a></li>
-</ul>
-<h3 id="dataset-2">Dataset</h3>
-<ul>
-<li><p>Train set (2011–2020): 284785 rows, 14 columns</p>
-<ul>
+<li>Train set (2011–2020): 284785 rows, 14 columns</li>
 <li>시군구 | 번지 | 본번 | 부번 | 단지명 | 도로명</li>
 <li>전월세구분 | 전용면적(㎡) | 층 | 건축년도</li>
 <li>계약년월 | 계약일</li>
 <li>보증금(만원) | 월세(만원)</li>
-</ul></li>
 </ul>
-<h3 id="introduction">Introduction</h3>
+<table style="width:6%;">
+<colgroup>
+<col style="width: 5%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>#### Sections - Introduction - Pre-processing - EDA - Feature Engineering - Modelling - Performance Evaluation - Conlusion</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>### Pre-Processing</td>
+</tr>
+</tbody>
+</table>
 <ul>
-<li>To be added</li>
+<li>Data description automatically added to the file when downloading</li>
 </ul>
-<h3 id="pre-processing">Pre-Processing</h3>
-<ul>
-<li>Data description automatically added to the file when downloading
+</section>
+<section class="slide level3">
+
 <center>
 <img src="./img/1.1_data_description.png" alt="description added to file" width="500">
-</center></li>
-</ul>
-<h3 id="pre-processing-1">Pre-Processing</h3>
-<ul>
-<li>Needs removal before <code>pandas.read_csv()</code></li>
-<li>Done manually ✔️ or programmatically</li>
-</ul>
-<h3 id="pre-processing-2">Pre-Processing</h3>
+</center>
+<table style="width:6%;">
+<colgroup>
+<col style="width: 5%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td>- Needs removal before <code>pandas.read_csv()</code> - Done manually ✔️ or programmatically</td>
+</tr>
+</tbody>
+</table>
 <ul>
 <li>2014 file is “untidy”
 <center>
 <img src="./img/1.2_csv_2014.jpg" alt="2014 file is untidy" height="300">
 </center></li>
 </ul>
-<h3 id="pre-processing-3">Pre-Processing</h3>
+</section>
+<section class="slide level3">
+
 <ul>
 <li>To merge 10 datasets into one <code>pandas.DataFrame</code>
 <center>
