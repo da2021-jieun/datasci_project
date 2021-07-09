@@ -11,7 +11,7 @@
 
 # Sections
 1. ## Introduction
-2. ## __Preprocessing__
+2. ## Preprocessing
   - Data is aggregated on a yearly basis and needs preprocessing of null values, different shapes, etc.
 3. ## EDA & Visualization
 4. ## Regression As Predictive Model
