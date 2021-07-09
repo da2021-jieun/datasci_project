@@ -1,3 +1,6 @@
+**To see the project slide deck, click [here](https://da2021-jieun.github.io/datasci_project/project_slides.html)**
+
+
 # What the project is about
 - EDA, regression modeling, and more with real estate rentals data—Seoul officetel rentals from 2011 to 2021 
 - 🇰🇷 2011년부터 2020년까지 10년 기간의 서울 오피스텔 전월세 거래 데이터를 분석 및 시각화하고 이를 토대로 2021년 1월부터 6월까지의 월세/보증금을 예측함
