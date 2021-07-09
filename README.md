@@ -1,4 +1,4 @@
-**Click [here](https://da2021-jieun.github.io/datasci_project/project_slides.html) to see the slide deck.**
+**Click [here](https://da2021-jieun.github.io/datasci_project/project_slides.html) to see the project slide deck.**
 
 # What the project is about
 - EDA, regression modeling, and more with real estate rentals data—Seoul officetel rentals from 2011 to 2021 
