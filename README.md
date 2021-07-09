@@ -1,4 +1,4 @@
-**To see the project slide deck, click [here](https://da2021-jieun.github.io/datasci_project/project_slides.html)**
+**gh-pages [here](https://da2021-jieun.github.io/datasci_project/)**
 
 
 # What the project is about
