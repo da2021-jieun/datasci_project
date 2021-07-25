@@ -3,6 +3,19 @@
 ## Introduction
 ## Preprocessing
 
+from matplotlib import font_manager,rc
+import matplotlib
+
+# D2Coding
+# font_path= r"C:\Users\Jieun\AppData\Local\Microsoft\Windows\Fonts\D2CodingBold-Ver1.3.2-20180524.ttf".replace("\\","/")
+
+# Medium
+font_path= r"C:\Windows\Fonts\SourceCodePro-Semibold.ttf".replace("\\","/")
+
+font_name= font_manager.FontProperties(fname=font_path).get_name() # D2Coding
+
+matplotlib.rc("font",family=font_name)
+
 # =========================================
 import pandas as pd 
 path= "./data/"
@@ -13,7 +26,7 @@ csv_2018= "seoul_rental_2018.csv"
 csv_2017= "seoul_rental_2017.csv"
 csv_2016= "seoul_rental_2016.txt"
 csv_2015= "seoul_rental_2015.txt"
-#csv_2014= "seoul_rental_2014.txt"
+csv_2014= "seoul_rental_2014.txt"
 csv_2014_clean= "seoul_rental_2014_clean.txt"
 csv_2013= "seoul_rental_2013.txt"
 csv_2012= "seoul_rental_2012.txt"
@@ -27,7 +40,7 @@ df_2018= pd.read_csv(path+csv_2018,encoding="cp949")
 df_2017= pd.read_csv(path+csv_2017,encoding="cp949")
 df_2016= pd.read_csv(path+csv_2016,encoding="utf-8")
 df_2015= pd.read_csv(path+csv_2015,encoding="utf-8")
-#df_2014= pd.read_csv(path+csv_2014,encoding="utf-8")
+# df_2014= pd.read_csv(path+csv_2014,encoding="utf-8")
 df_2013= pd.read_csv(path+csv_2013,encoding="utf-8")
 df_2012= pd.read_csv(path+csv_2012,encoding="utf-8")
 df_2011= pd.read_csv(path+csv_2011,encoding="utf-8")
@@ -44,11 +57,10 @@ df_2011= pd.read_csv(path+csv_2011,encoding="utf-8")
 df_2014_clean= pd.read_csv(path+csv_2014_clean,encoding="utf-8")
 # df_2014_clean.shape
 
-# df_list= [df_2020,df_2019,df_2018,df_2017,df_2016,df_2015,df_2014_clean,df_2013,df_2012,df_2011]
-# for i,df in enumerate(df_list):
-#     year=2020-i
-#     print(year,":",df.shape)
-    
+df_list= [df_2020,df_2019,df_2018,df_2017,df_2016,df_2015,df_2014_clean,df_2013,df_2012,df_2011]
+for i,df in enumerate(df_list):
+    year=2020-i
+    print(year,":",df.shape)
 # =======================================================
 #### - The two unnamed columns are from the year 2014.
 #### - tabulation of 1909 rows incorrect; has to be manually adjusted
@@ -68,7 +80,7 @@ df_2014_clean= pd.read_csv(path+csv_2014_clean,encoding="utf-8")
 df_list= [df_2020,df_2019,df_2018,df_2017,df_2016,df_2015,df_2014_clean,df_2013,df_2012,df_2011]
 df_backup= pd.concat(df_list,ignore_index=True)
 df= df_backup.copy()
-# df.info()
+df.info()
 # df.head(1)
 
 # =======================================================
@@ -117,6 +129,7 @@ df.columns= cols
 # - 32418 cells has one whitespace,
 # 🇰🇷 도로 주소가 없는 " " 셀에 단지명을 채워넣음.
 # 32418 rows 
+# df["estate_name"]= df_backup["단지명"]
 df["estate_name"]= df.estate_name.astype(str)
 df["str_addr"]= df.str_addr.astype(str)
 idx= df[(df.str_addr.str.len()==1)&(df.str_addr==" ")].index # idx.shape
@@ -154,7 +167,7 @@ df.insert(1,"old_div",[f"{val.split()[2]}" for i,val in df.district1.iteritems()
 ### Drop columns
 #### - district1
 df.drop("district1",axis=1,inplace=True)
-# df.head(1)
+df.head(1)
 
 # =======================================================
 ### Data imputation: yr_built
@@ -203,7 +216,7 @@ df.head(1)
 #### > 보증금 컬럼의 구분자(,)를 제거하고 dtype을 int로 변환
 df.deposit.astype(str).str.contains(",").sum()
 # df["deposit"]= df_backup["보증금(만원)"]
-df["deposit"]= df.astype(str).deposit.str.replace(",","").astype(int)
+df["deposit"]= df.deposit.astype(str).str.replace(",","").astype(int) # 2125 => 1806 unique values
 
 ### =====================================================
 ### Change dtype of `lotnum_1`,`sign_yymm`,`sign_dd`,`rent_price`,`floor` to int32
@@ -221,9 +234,6 @@ df.floor= df.floor.astype(int)
 # df.dtypes
 df.info()
 
-### ===============================================
-### ============== basic statistics ==============
-### ===============================================
 ### dataset shape: (284785 rows, 13 columns)
 ## 0   district    284785 non-null  object        
 #  1   old_div     284785 non-null  object        
@@ -237,9 +247,13 @@ df.info()
 #  9   rent_price  284785 non-null  int32         
 #  10  floor       284785 non-null  int32         
 #  11  yr_built    284785 non-null  int32         
-#  12  str_addr    284785 non-null  object 
-print(df.shape)
+#  12  str_addr    284785 non-null  object        
+# dtypes: datetime64[ns](1), float32(1), int32(7), object(4)
+# memory usage: 19.6+ MB 
 
+print(df.shape) #(284785 rows, 13 columns)
+
+print(df.isna().sum())
 # =============================================
 ### Number of missing values
 # district      0
@@ -255,10 +269,338 @@ print(df.shape)
 # floor         0
 # yr_built      0
 # str_addr      0
-print(df.isna().sum())
+
+
+# =====================================================
+## FEATURE ENGINEERING
+### GPS coordinates for the 25 districts
+### - ['강남구', '강동구', '강북구', '강서구', '관악구', '광진구', '구로구', '금천구', '노원구',       '도봉구', '동대문구', '동작구', '마포구', '서대문구', '서초구', '성동구', '성북구', '송파구',       '양천구', '영등포구', '용산구', '은평구', '종로구', '중구', '중랑구']
+
+coords= [
+    (37.5172, 127.0473), #gangnam
+    (37.5301, 127.1238), #gangdong
+    (37.6396, 127.0257), #gangbuk-gu
+    (37.5510, 126.8495),# gangseo-gu
+    (37.4784, 126.9516),# gwanak-gu
+    (37.5385, 127.0823), #gwangjin-gu 
+    (37.4954, 126.8874), #guro-gu
+    (37.4519, 126.9020), #geumcheon-gu
+    (37.6542, 127.0568), #nowon-gu
+    (37.6688, 127.0471), #dobong-gu
+(37.5744, 127.0400), #dongdaemun-gu
+(37.5124, 126.9393), #dongjak-gu
+(37.5638, 126.9084), #mapo-gu
+(37.5791, 126.9368), #seodaemun-gu
+(37.4837, 127.0324), #seocho-gu
+(37.5633, 127.0371), #seongdong-gu
+(37.5891, 127.0182), #seongbuk-gu
+(37.5145, 127.1066), #songpa-gu
+(37.5169, 126.8664), #yangcheon-gu
+(37.5264, 126.8962), #yeongdeungpo-gu
+    (37.5384, 126.9654), #yongsan-gu
+    (37.6027, 126.9291), #eunpyeong-gu
+    (37.5730, 126.9794), #jongno-gu
+    (37.5641, 126.9979), #jung-gu
+    (37.6066, 127.0927), #jungnang-gu
+]
+
+DISTRICT_LAT= {}
+DISTRICT_LON= {}
+for idx,name in enumerate((list(df.district.unique()))):
+    DISTRICT_LAT[name]= coords[idx][0]
+    DISTRICT_LON[name]= coords[idx][1]
+
+### Add latitude and longitude columns
+lat= [DISTRICT_LAT.get(name) for i,name in df["district"].iteritems()]
+lon= [DISTRICT_LON.get(name) for i,name in df["district"].iteritems()]
+
+df.insert(1,"latitude",lat)
+df.insert(2,"longitude",lon)
+df.head(1)
+
+# str_addr
+# separate street names using regular expression
+#
+# https://stackoverflow.com/questions/43237338/python-regular-expression-split-string-into-numbers-and-text-symbols
+
+# import re
+# re.sub("\(|\)","","(1237-3)") # gives 1237-3
+# def find_pattern(pat,str_seq):
+#     # \d+     matches one or more digits
+#     # \d*\D+  matches zero or more digits followed by one or more non-digits
+#     # \d+|\D+ matches one or more digits OR one or more non-digits
+#     return re.search(pat,str_seq).group()
+
+#### split by whitespace \s or
+####  one or more digits \d+ 
+#마곡중앙로 161-11, 힐스테이트에코 마곡나루역 라마다앙코르 서울마곡
+import re
+# ser_street= [re.split("\d+|\(",val)[0] for val in df.str_addr.values]
+# str_addr= str_addr.apply(lambda x: re.sub("\(|\)|\s","",x))
+
+# 77 rows has lot_number in their street address
+# df["str_addr"]= df_backup["도로명"]
+# str_addr= df[df.street.str.len()<3]["str_addr"]
+# str_addr= df[df.street.str.len()==2]["str_addr"]
+
+#
+# =================================
+# Add new `street` column
+# separator: whitespace
+
+dict_lot_num_street= {}
+dict_lot_num_street["669-3"]= "방학로 173"
+dict_lot_num_street["121-5"]= "동소문로24길 13-9"
+dict_lot_num_street["441-11"]= "고덕로 45"
+dict_lot_num_street["204-5"]= "자곡로 127"
+dict_lot_num_street["9-13"]= "양천로57길 9-13"
+dict_lot_num_street["115-1"]= "마곡서1로 115-1"
+dict_lot_num_street["10-16"]= "중앙로 10-16"
+dict_lot_num_street["16"]= "선릉로89길 16"
+dict_lot_num_street["355"]= "아차산로 355"
+dict_lot_num_street["164"]= "사당로 164"
+dict_lot_num_street["212"]= "올림픽로 212"
+
+dict_lot_num_street["한흥 삼성오피스텔"]= "봉은사로 430"
+dict_lot_num_street["한흥삼성오피스텔"]= "봉은사로 430"
+dict_lot_num_street["강남 드림하이 오피스텔"]= "헌릉로569길 21-30"
+dict_lot_num_street["강남드림하이오피스텔"]= "헌릉로569길 21-30"
+dict_lot_num_street["역삼 푸르지오 시티"]= "논현로85길 52"
+dict_lot_num_street["역삼푸르지오시티"]= "논현로85길 52"
+dict_lot_num_street["강일 포디움"]= "아리수로91길 24-9"
+dict_lot_num_street["강일포디움"]= "아리수로91길 24-9"
+dict_lot_num_street["에코 타워빌"]= "성안로27길 51-14"
+dict_lot_num_street["에코타워빌"]= "성안로27길 51-14"
+dict_lot_num_street["GM Valley"]= "곰달래로 116"
+dict_lot_num_street["GMValley"]= "곰달래로 116"
+dict_lot_num_street["금천 롯데캐슬 골드파크 2차"]= "벚꽃로 30"
+dict_lot_num_street["금천롯데캐슬골드파크2차"]= "벚꽃로 30"
+dict_lot_num_street["도봉 엠블렘"]= "도봉로180길 38"
+dict_lot_num_street["도봉엠블렘"]= "도봉로180길 38"
+dict_lot_num_street["도봉 투웨니퍼스트 1단지"]= "도봉로180길 20"
+dict_lot_num_street["도봉투웨니퍼스트1단지"]= "도봉로180길 20"
+dict_lot_num_street["도봉 투웨니퍼스트 2단지"]= "도봉로180길 28"
+dict_lot_num_street["도봉투웨니퍼스트2단지"]= "도봉로180길 28"
+dict_lot_num_street["창동 투웨니퍼스트"]= "도봉로110라길 70-14"
+dict_lot_num_street["창동투웨니퍼스트"]= "도봉로110라길 70-14"
+
+df["str_addr2"]= df.str_addr.apply(lambda x: dict_lot_num_street.get(x,x)) # get value of x, if none keep it
+
+import re
+str_addr= df.str_addr.apply(lambda x: x.strip())
+str_addr= str_addr.apply(lambda x: x if dict_lot_num_street.get(x)==None else dict_lot_num_street.get(x)) # get value of x, if none keep it
+
+# import numpy as np
+# np.argmin(str_addr.str.len())
+
+ser_street= [re.split("\s",val)[0] for val in str_addr.values]
+#### longest street name
+# max(ser_street,key=len) # 목동중앙북로
+
+### Add new `street` column
+del df["street"]
+df.insert(3,"street",ser_street)
+df.head(1)
+
+# 
+
+### ===============================================
+### ============== basic statistics ==============
+### ===============================================
+columns= ["latitude","longitude",'yr_built', 'unit_size', 'floor','deposit', 'pay_monthly' ]
+col_desc= ["Year Built","Unit Size","Floor","Deposit","Monthly Rent"]
+datetime= "sign_date"
+
+df[columns].describe()
+
+# histograms
+import matplotlib.pyplot as plt 
+plt.style.use("fivethirtyeight")
+plt.style.use("ggplot")
+df[columns].hist(bins=50,figsize=(11,10))
+plt.savefig("df[columns].hist(bins_50).png")
+plt.show()
+
+# ========================================
+# FOLIUM
+import folium
+
+# seoul_map = folium.Map(location=[37.55,126.98],zoom_start=12) # city center 37.56421, 127,00169
+
+data_map= folium.Map(location=[37.56421, 127.00169],zoom_start=10)
+
+df_songpa= df[df.district=="송파구"]
+
+for district,lat,lon in zip(df_songpa.district,df_songpa.latitude,df_songpa.longitude):
+    folium.Marker(location=[lat,lon],tootip=district,).add_to(data_map)
+data_map
+
+
+# =======================================
+# GEOPANDAS
+# https://thlee33.medium.com/geopandas-%EA%B8%B0%EC%B4%88-fe1feecd2ab4
+import geopandas as gpd
+
+from IPython.display import display
+from IPython.display import HTML
+
+geom_district= gpd.points_from_xy(df.longitude, df.latitude)
+geom_district[:3]
+
+# add location info
+columns= ["district","street","old_div"]
+gdf_district= gpd.GeoDataFrame(df[columns],geometry=geom_district,crs="epsg:4326") # google earth
+gdf_district.head(1)
+
+# convert coord. system to epsg:3857 (google/bing/yahoo,osm maps)
+gdf_3857= gdf_district.to_crs(epsg=3857)
+
+# plot
+gdf_3857.drop_duplicates().plot(color="gray")
+
+# ================
+# SAVE AS GEOJSON
+gdf_3857.drop_duplicates().to_file(path+"district.geojson",driver="GeoJSON")
+
+# plot gangnam-gu
+gdf_3857[gdf_3857.district=="강남구"].drop_duplicates().plot()
+
+# =======================
+# LOAD SEOUL DISTRICT MAP
+#
+# SIG_202101/TL_SCCO_SIG.shp
+# path_geo= "./data/seoul_streets/"
+# filename= "Z_KAIS_TL_SPRD_MANAGE_11000.shp"
+map_seoul= gpd.read_file(path_geo+filename,encoding="cp949")
+map_seoul
+
+path_geo= "./data/seoul_districts/"
+filename= "LARD_ADM_SECT_SGG_11.shp"
+map_seoul= gpd.read_file(path_geo+filename,encoding="cp949")
+map_seoul.crs
+
+# convert coord. system to epsg:3857 (google/bing/yahoo,osm maps)
+map_seoul_3857= map_seoul.to_crs(epsg=3857)
+map_seoul_3857.crs
+
+# untidy cells of SGG_NM: 
+# 서울시노원구,서울시성북구,서울시도봉구
+map_seoul_3857.SGG_NM= map_seoul_3857.SGG_NM.astype(str).apply(lambda x: re.sub("서울시","",x))
+
+# ADM_SECT_C: district code
+map_seoul_3857["ADM_SECT_C"]= map_seoul_3857["ADM_SECT_C"].astype(str)
+map_seoul_3857.plot(color="gray")
+
+# =================================
+# MERGE GDF_DISTRICT WITH MAP_SEOUL
+drop_cols= ["lotnum_1","str_addr","latitude","longitude"]
+gdf_map= pd.merge(map_seoul_3857[['ADM_SECT_C', 'SGG_NM', 'geometry']],df.drop(drop_cols,axis=1),how="left",left_on="SGG_NM",right_on="district")
+
+# For plotting
+import matplotlib as mpl 
+import matplotlib.pyplot as plt 
+import seaborn as sns 
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+
+# Choropleth map
+
+# ,label=['강서구', '영등포구', '마포구', '구로구', '송파구', '관악구', '강남구', '은평구', '동대문구', '강동구','서초구', '금천구', '양천구', '성동구', '광진구', '중구', '용산구', '서대문구', '도봉구', '종로구','중랑구', '노원구', '동작구', '성북구', '강북구']
+district_ratio= gdf_map.district.value_counts()/gdf_map.shape[0]*100
+
+fig,ax= plt.subplots(1,1,figsize=(20,8))
+divider= make_axes_locatable(ax)
+cax= divider.append_axes("right", size="5%",pad=.1)
+
+gdf_map.drop_duplicates("district").plot((district_ratio/gdf_map.shape[0]*100).values,ax=ax,legend=True,cax=cax,edgecolor="black",cmap="cubehelix_r")
+ax.set_title("Rentals (%) by District")
+ax.set_axis_off()
+plt.show()
+
+# ================================
+# GEOPLOT
+# coord system: 4326, google earth
+district_ratio= gdf_map.district.value_counts()
+df_district_ratio= pd.DataFrame({"rental_vol":district_ratio,"rental_ratio":(district_ratio/gdf_map.shape[0]*100)},index=district_ratio.index)
+
+gdf_map_ge= gdf_map.drop_duplicates("district").to_crs(epsg=4326)
+gdf_map_ge= pd.merge(gdf_map_ge,df_district_ratio,how="left",left_on="district",right_on=df_district_ratio.index)
+
+gdf_map_centroid= gdf_map_ge.copy()
+gdf_map_centroid["geometry"]= gdf_map_centroid["geometry"].centroid
+
+# ===========================================
+# Rental Volumes in five groups
+
+gdf_map_centroid[["district","rental_vol"]].sort_values("rental_vol",ascending=False)
+# district	rental_vol
+# 9	강서구	    43464
+# 6	영등포구	34144
+# 11 마포구	    21643
+# 8	구로구	    21501
+# 1	송파구	    20544
+# 4	관악구	    18090
+# 2	강남구	    17221
+# 13 은평구	    13144
+# 19 동대문구	10346
+
+import matplotlib.pyplot as plt
+import geoplot as gplt 
+import geoplot.crs as gcrs
+import mapclassify as mc
+import pyproj
+plt.style.use("fivethirtyeight")
+plt.style.use("seaborn-notebook")
+
+scheme= mc.Quantiles(gdf_map_centroid["rental_vol"],k=7) # Rental Volumes in five groups
+
+proj= gcrs.WebMercator()
+
+ax= gplt.polyplot(gdf_map_ge,zorder=-1,linewidth=1,projection=proj,facecolor="lightgray",edgecolor="white",figsize=(15,8))
+
+gplt.pointplot(gdf_map_centroid,projection=gcrs.WebMercator(),scale="rental_vol",limits=(10,50),hue="rental_vol",scheme=scheme,cmap="viridis_r",legend=True,legend_var="hue",ax=ax)
+
+plt.title("Rental Volumes in 7 Groups",fontsize=16)
+
+# ========================
+# ADD BACKGROUND MAP
+import contextily as ctx
+
+scheme= mc.Quantiles(gdf_map_centroid["rental_ratio"],k=7) # Rental Volumes in five groups
+extent= gdf_map_ge.total_bounds
+
+# plt.figure(figsize=(15,8))
+ax= gplt.pointplot(gdf_map_centroid,projection=proj,alpha=.8,scale="rental_ratio",limits=(30,100),hue="rental_ratio",scheme=scheme,cmap="summer_r",legend=True,legend_var="hue",figsize=(25,25))
+gplt.webmap(gdf_map_ge,ax=ax,extent=extent,provider=ctx.providers.Stamen.TonerLite)
+
+plt.setp(ax.get_legend().get_texts(), fontsize='22') # for legend text
+# plt.setp(plt.legend.set_title('Rental Volume'),prop={'size':'large'})
+plt.show()
+
+
+
 
 # =============================================
 ### column `district`
+import matplotlib
+import matplotlib.pyplot as plt 
+import seaborn as sns
+
+# boxplot: district 송파구
+plt.style.use("fivethirtyeight")
+figsize=(10,5)  #(16,6) 
+fix,ax= plt.subplots(ncols=2,nrows=1, figsize=figsize)
+
+sns.boxplot(ax=ax[0],x="district",y="pay_monthly",data=df[df.district=="송파구"],linewidth=1) #orient="h"
+sns.violinplot(ax=ax[1],x="district",y="pay_monthly",data=df[df.district=="송파구"],color=".25") #orient="h"
+plt.show()
+
+# sns.set_theme(style="ticks",color_codes=True) # does not work for Korean
+plt.style.use("seaborn-paper")
+figsize=(16,6)  #(16,6) 
+fix,ax= plt.subplots(figsize=figsize)
+sns.boxplot(ax=ax,x="district",y="pay_monthly",data=df,linewidth=1) #orient="h"
+
+
 print("The district names:\n",df.district.unique())
 print("="*50)
 print("The number of the districts:",df.district.nunique())
@@ -280,6 +622,20 @@ print(f"The occurrence of 동:\n{('=')*45}\n{df.old_div.value_counts()}")
 # 월세    153970
 # 전세    130815
 print(f"Rent type:\n{('=')*15}\n{df.rent_type.value_counts()}")
+
+
+# pay_monthly: min,max: (0,2123)
+# deposit    : min,max: (20,554100)
+import matplotlib.pyplot as plt
+plt.style.use("fivethirtyeight")
+plt.style.use("seaborn-notebook")
+plt.figure(figsize=(8,5))
+h=plt.hist2d(df.yr_built, df.pay_monthly,bins=(10,10),vmax=2200)
+cbar=plt.colorbar(h[3],label="monthly rent")
+cbar.solids.set_edgecolor("face")
+plt.xlabel("Year Built")
+plt.ylabel("Monthly Rent (in 10K won)")
+plt.show()
 
 ### =============================================
 ### Column `sign_date`
